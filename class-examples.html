@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	<title>HTML</title>
+	<!-- DO NOT modify the framework files.  They will need to be replaced periodically. -->
+	<link href="framework/zOS.css" rel="stylesheet" type="text/css" />
+	<link href="framework/css-framework.css" rel="stylesheet" type="text/css" />
+	<link href="framework/layout-global.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="framework/jetendo-init.js"></script>
+	<script type="text/javascript" src="framework/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="framework/jetendo-no-listing.js"></script>
+	<script type="text/javascript" src="framework/jquery.cycle2.js"></script>
+	<script type="text/javascript" src="framework/jquery.cycle2.swipe.min.js"></script> 
+	<!-- place your css and js in these files -->
+	<link href="stylesheets/style.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="custom.js"></script>
+</head>
+
+<body>
+<div style="width:100%; float:left; padding-left:5px; padding-right:5px;">
+<h2 class="z-fh-30">Global Layout Settings</h2><p>You must include the following stylesheet in your template to make use of this feature: /zupload/layout-global.css</p></div>
+<div style="width:100%; overflow:auto; font-size:14px !important; float:left; padding-left:5px; padding-right:5px;">
+<form action="/z/admin/layout-global/saveLayoutSettings" method="post">
+<table class="table-list">
+<tr>
+<th>&nbsp;</th><th>Default</th><th>1800</th><th>1550</th><th>1362</th><th>992</th><th>767</th><th>479</th></tr><tr><th>Enabled?</th><td><input type="checkbox" name="enabled_Default" value="1" checked="checked" /></td><td><input type="checkbox" name="enabled_1800" value="1" /></td><td><input type="checkbox" name="enabled_1550" value="1" /></td><td><input type="checkbox" name="enabled_1362" value="1" checked="checked" /></td><td><input type="checkbox" name="enabled_992" value="1" checked="checked" /></td><td><input type="checkbox" name="enabled_767" value="1" checked="checked" /></td><td><input type="checkbox" name="enabled_479" value="1" checked="checked" /></td></tr><tr><th>Box Margin Bottom %</th><td><input type="text" name="boxMarginBottomPercent_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginBottomPercent_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginBottomPercent_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginBottomPercent_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginBottomPercent_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginBottomPercent_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginBottomPercent_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Box Margin Side %</th><td><input type="text" name="boxMarginSidePercent_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginSidePercent_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginSidePercent_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginSidePercent_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginSidePercent_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginSidePercent_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginSidePercent_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Box Margin Top %</th><td><input type="text" name="boxMarginTopPercent_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginTopPercent_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginTopPercent_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginTopPercent_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginTopPercent_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginTopPercent_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxMarginTopPercent_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Box Padding Bottom %</th><td><input type="text" name="boxPaddingBottomPercent_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingBottomPercent_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingBottomPercent_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingBottomPercent_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingBottomPercent_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingBottomPercent_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingBottomPercent_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Box Padding Side %</th><td><input type="text" name="boxPaddingSidePercent_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingSidePercent_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingSidePercent_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingSidePercent_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingSidePercent_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingSidePercent_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingSidePercent_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Box Padding Top %</th><td><input type="text" name="boxPaddingTopPercent_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingTopPercent_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingTopPercent_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingTopPercent_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingTopPercent_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingTopPercent_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="boxPaddingTopPercent_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Column Gap Bottom %</th><td><input type="text" name="columnGapBottomPercent_Default" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapBottomPercent_1800" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapBottomPercent_1550" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapBottomPercent_1362" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapBottomPercent_992" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapBottomPercent_767" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapBottomPercent_479" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Column Gap Side %</th><td><input type="text" name="columnGapSidePercent_Default" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapSidePercent_1800" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapSidePercent_1550" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapSidePercent_1362" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapSidePercent_992" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapSidePercent_767" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="columnGapSidePercent_479" value="2" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Heading Line Height Scale</th><td><input type="text" name="headingLineHeightScale_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingLineHeightScale_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingLineHeightScale_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingLineHeightScale_1362" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingLineHeightScale_992" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingLineHeightScale_767" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingLineHeightScale_479" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Heading Minimum Font Size</th><td><input type="text" name="headingMinimumFontSize_Default" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingMinimumFontSize_1800" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingMinimumFontSize_1550" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingMinimumFontSize_1362" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingMinimumFontSize_992" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingMinimumFontSize_767" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingMinimumFontSize_479" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Heading Scale</th><td><input type="text" name="headingScale_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingScale_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingScale_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingScale_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingScale_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingScale_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="headingScale_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Indent Scale</th><td><input type="text" name="indentScale_Default" value="1.2" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="indentScale_1800" value="1.15" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="indentScale_1550" value="1.1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="indentScale_1362" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="indentScale_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="indentScale_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="indentScale_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Minimum Padding</th><td><input type="text" name="minimumPadding_Default" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="minimumPadding_1800" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="minimumPadding_1550" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="minimumPadding_1362" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="minimumPadding_992" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="minimumPadding_767" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="minimumPadding_479" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Text Line Height Scale</th><td><input type="text" name="textLineHeightScale_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textLineHeightScale_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textLineHeightScale_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textLineHeightScale_1362" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textLineHeightScale_992" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textLineHeightScale_767" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textLineHeightScale_479" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Text Minimum Font Size</th><td><input type="text" name="textMinimumFontSize_Default" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textMinimumFontSize_1800" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textMinimumFontSize_1550" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textMinimumFontSize_1362" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textMinimumFontSize_992" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textMinimumFontSize_767" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textMinimumFontSize_479" value="10" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr><th>Text Scale</th><td><input type="text" name="textScale_Default" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textScale_1800" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textScale_1550" value="1" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textScale_1362" value="0.836" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textScale_992" value="0.806" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textScale_767" value="0.786" style="font-size:14px; width:70px;min-width:70px;" /></td><td><input type="text" name="textScale_479" value="0.736" style="font-size:14px; width:70px;min-width:70px;" /></td></tr><tr>
+<th>&nbsp;</th>
+<td colspan="16">
+Column width that triggers single column below 992: <input type="text" name="minimum_column_width" style="font-size:14px; max-width:100px; min-width:100px;" value="150"><br />
+Enable z-breakpoint: Checkbox
+</td>
+</tr><tr>
+<th>&nbsp;</th>
+<td colspan="16">
+<input type="submit" name="save1" value="Save"> 
+<input type="button" name="save2" value="Restore Defaults" onclick="window.location.href='/z/admin/layout-global/saveLayoutSettings?setToDefault=1'; "> 
+</td></table>
+</form>
+</div>
+<h2 class="z-fh-30">Layout Example</h2> 
+<style type="text/css">
+.zapp-shell-container{padding-left:0px; padding-right:0px;}
+section:nth-child(even){ background-color:#555;}
+section:nth-child(odd){ background-color:#666;}
+section section{background:none;}
+.z-container{ background-color:#aaa;}
+.z-fill-width, .z-container div, .z-column { background-color:#EEE !important;}
+.z-left-sidebar, .z-right-sidebar{ background-color:#ccc !important;}
+</style>
+<div class="wrapper">
+<section>
+<div class="z-container"> 
+<div class="z-column">
+For visualizing space adjustments, background colors have been applied. Dark = section, medium = z-container, lightest = z-column
+</div> 
+</div> 
+</section>
+<section>
+<div class="z-container z-pv-10">
+<div class="z-column " > 
+Each grid system can have columns that span 1 or more of the columns. Examples:
+</div>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-1of4 " > 
+<div class="z-h-24">z-1of4</div>
+<div class="z-t-16">Text</div> 
+</div>
+<div class="z-2of4 " > 
+<div class="z-h-24">z-2of4</div>
+<div class="z-t-16">Text</div>
+</div> 
+<div class="z-1of4" > 
+<div class="z-h-24">z-1of4</div>
+<div class="z-t-16">Text</div>
+</div> 
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-1of3" > 
+<div class="z-h-24">z-1of3</div>
+<div class="z-t-16">Text</div>
+</div>
+<div class="z-2of3"> 
+<div class="z-h-24">z-2of3</div>
+<div class="z-t-16">Text</div> 
+</div> 
+</div>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-4of4" > 
+<div class="z-h-24">z-4of4</div>
+<div class="z-t-16">Text</div> 
+</div>
+</div>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column" > 
+<h2>All Grid Systems</h2>
+</div>
+</div>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">2 column grid system ( class="z-1of2" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of2" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of2" > 
+<div class="z-h-16">2</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">3 column grid system ( class="z-1of3" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of3" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of3" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of3" > 
+<div class="z-h-16">3</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">4 column grid system ( class="z-1of4" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of4" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of4" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of4" > 
+<div class="z-h-16">3</div>
+</div>
+<div class="z-1of4" > 
+<div class="z-h-16">4</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">5 column grid system ( class="z-1of5" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of5" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of5" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of5" > 
+<div class="z-h-16">3</div>
+</div>
+<div class="z-1of5" > 
+<div class="z-h-16">4</div>
+</div>
+<div class="z-1of5" > 
+<div class="z-h-16">5</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">6 column grid system ( class="z-1of6" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of6" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of6" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of6" > 
+<div class="z-h-16">3</div>
+</div>
+<div class="z-1of6" > 
+<div class="z-h-16">4</div>
+</div>
+<div class="z-1of6" > 
+<div class="z-h-16">5</div>
+</div>
+<div class="z-1of6" > 
+<div class="z-h-16">6</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">7 column grid system ( class="z-1of7" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of7" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of7" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of7" > 
+<div class="z-h-16">3</div>
+</div>
+<div class="z-1of7" > 
+<div class="z-h-16">4</div>
+</div>
+<div class="z-1of7" > 
+<div class="z-h-16">5</div>
+</div>
+<div class="z-1of7" > 
+<div class="z-h-16">6</div>
+</div>
+<div class="z-1of7" > 
+<div class="z-h-16">7</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">12 column grid system ( class="z-1of12" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of12" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">3</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">4</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">5</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">6</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">7</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">8</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">9</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">10</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">11</div>
+</div>
+<div class="z-1of12" > 
+<div class="z-h-16">12</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-center-children"> 
+<div class="z-column z-h-18">16 column grid system ( class="z-1of16" )</div> 
+<section class="z-center-children z-pv-10"> 
+<div class="z-1of16" > 
+<div class="z-h-16">1</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">2</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">3</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">4</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">5</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">6</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">7</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">8</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">9</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">10</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">11</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">12</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">13</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">14</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">15</div>
+</div>
+<div class="z-1of16" > 
+<div class="z-h-16">16</div>
+</div>
+</section>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container">
+<div class="z-column z-h-18">Right sidebar with automatic fill width column</div> 
+</div>
+<div class="z-container z-mv-10"> 
+<div class="z-column z-p-0">
+<aside class="z-column z-fill-width">
+z-column and z-fill-width
+</aside>
+<section class="z-1of4 z-right-sidebar">
+z-1of4 and z-right-sidebar
+</section>
+</div> 
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container">
+<div class="z-column z-h-18">Left sidebar with automatic fill width column and reverse order html</div> 
+</div>
+<div class="z-container z-mv-10"> 
+<div class="z-column z-reverse-order z-p-0">
+<section class="z-column z-fill-width">
+z-column and z-fill-width
+</section>
+<aside class="z-1of4 z-left-sidebar">
+z-1of4 and z-left-sidebar
+</aside> 
+</div>
+</div>
+</section>
+<section class="z-pv-10">
+<div class="z-container z-mv-10">
+<div class="z-column z-h-18">Responsive Heading and Text Classes</div> 
+</div>
+<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
+<div class="z-1of3">
+<div class="z-h-36">
+z-h-36
+</div> 
+<div class="z-h-30">
+z-h-30
+</div> 
+<div class="z-h-24">
+z-h-24
+</div> 
+<div class="z-h-18">
+z-h-18
+</div> 
+<div class="z-h-14">
+z-h-14
+</div> 
+</div>
+<div class="z-1of3">
+<h1>Heading1</h1>
+<h2>Heading2</h2>
+<h3>Heading3</h3> 
+<h4>Heading4</h4>
+<h5>Heading5</h5>
+</div>
+<div class="z-1of3">
+<div class=" z-t-36">
+z-t-36
+</div> 
+<div class=" z-t-24">
+z-t-24
+</div> 
+<div class=" z-t-18">
+z-t-18
+</div> 
+</div>
+</div>
+<div class="z-container z-mv-10">
+<div class="z-column z-h-18">Fixed Size Heading and Text Classes</div> 
+</div>
+<div class="z-container z-center-children z-equal-heights" data-column-count="3"> 
+<div class="z-1of3">
+<div class="z-fh-36">
+z-fh-36
+</div> 
+<div class="z-fh-30">
+z-fh-30
+</div> 
+<div class="z-fh-24">
+z-fh-24
+</div> 
+<div class="z-fh-18">
+z-fh-18
+</div> 
+<div class="z-fh-14">
+z-fh-14
+</div> 
+</div>
+<div class="z-1of3">
+<h1 class="z-fh-36">Heading1</h1>
+<h2 class="z-fh-30">Heading2</h2>
+<h3 class="z-fh-24">Heading3</h3> 
+<h4 class="z-fh-18">Heading4</h4>
+<h5 class="z-fh-14">Heading5</h5>
+</div>
+<div class="z-1of3">
+<div class=" z-ft-36">
+z-ft-36
+</div> 
+<div class=" z-ft-24">
+z-ft-24
+</div> 
+<div class=" z-ft-18">
+z-ft-18
+</div> 
+</div>
+</div>
+</section> 
+
+
+</body>
+</html>
