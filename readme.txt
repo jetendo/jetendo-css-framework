@@ -25,7 +25,7 @@ Overview
 	
 	The framework has multiple grid systems using percent based calculations for width/padding/margin.  We think this makes it easier to do uneven column widths without writing having to write any new CSS or mobile code.    This feature was inspired by cascade framework.
 
-	The generated CSS varies in size depending on how it is configured, and it currently is around 90kb.  We feel this is an acceptable size since the minified bootstrap css file is 200kb.   We also avoided the use of commas to compress our CSS on purpose, to minimize the amount of classes shown when you inspect a single element in the browser with the developer tools.  We don't like how cluttered bootstrap is in comparison.
+	The generated CSS varies in size depending on how it is configured, and it vary between 90kb and 200kb.  We feel this is an acceptable size since the minified bootstrap css file is 200kb.   We also avoided the use of commas to compress our CSS on purpose, to minimize the amount of classes shown when you inspect a single element in the browser with the developer tools.  We don't like how cluttered bootstrap is in comparison.
 
 	Overview of Features:
 
@@ -56,16 +56,15 @@ Overview
 
 	I'm also using html5 semantic tags now, header,aside,nav,section,footer, which can describe the structure of a page.
 
-	I rewrote the menu code to allow all the menu buttons to appear between 768 to 992 (tablet portrait).  It figures out how to auto-center the buttons with equal spacing and can switch to 2+ rows if there is no room without any glitches.   The code to integrate this was moved to the core, so you only need to have html & class structure to get mobile menus working.   On more basic sites, this menu code would be used for the desktop menu too.  Bill wanted this.
-	I rewrote the code for 3 line mobile phone menu to use CSS transition / transform, to animate from the side of the screen.  I also made it able to work like usual as an option too.  This is superior to the method used on http://www.rivergrille.net/ because transform is hardware accelerated and smoother.  I made it possible for the menu to come in from 4 directions.  Built in to the core. Bill wanted this.
+	I rewrote the menu code to allow all the menu buttons to appear between 768 to 992 (tablet portrait).  It figures out how to auto-center the buttons with equal spacing and can switch to 2+ rows if there is no room without any glitches.   The code to integrate this was moved to the core, so you only need to have html & class structure to get mobile menus working.   On more basic sites, this menu code would be used for the desktop menu too.  This is something new we want in future projects.
+	
+	I rewrote the code for 3 line mobile phone menu to use CSS transition / transform, to animate from the side of the screen.  I also made it able to work like usual as an option too.  It uses transform which is hardware accelerated and smoother.  I made it possible for the menu to come in from 4 directions.  This is something new we want in future projects.
 
 	I did compatibility testing on all sizes, all devices/browsers.  Note: we don't support or test or try to make things work with ie8 at all anymore since 2-4 months ago.  Users see an incompatibility warning on that browser with link to upgrade that is hosted by Google. The warning can be hidden.  This is similar to how other companies handle it, like Google.
 
-	I'm trying to design this framework so that I can send 2 or 3 files to Neha, and documentation so that she can build them the way we want.  Hopefully, it reduces her time to finish while also giving us code that will be able to be reused more easily.
-
 	I'd also like to build more code generation tools later that can create the initial structure of a page using the framework class names.  You'd build a page layout visually and then export it as html / css / js that is already working mobile responsive and then you just skin the rest.   This would make it easier for people to use things correctly and type less.
 
-	It is easy to use the framework wrong.  The danger of doing that, is you end up having to write more mobile code to fix things.   The mobile code is mostly automatic if we can learn how to use it consistently.
+	It is easy to use a framework wrong.  The danger of doing that is that you end up having to write more mobile code to fix things.   The mobile code is mostly automatic if we can learn how to use it consistently.
 
 	Don't forget that the css framework is able to be re-published per site and per breakpoint to have very different values for all the spacing and sizes.   By using these classes, you'll not only inherit the hardcoded css, but also the dynamic values too which makes reskinning existing code on a new site faster.
 
