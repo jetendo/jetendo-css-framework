@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+	<title>HTML</title>
+	<!-- DO NOT modify the framework files.  They will need to be replaced periodically. -->
+	<link href="framework/zOS.css" rel="stylesheet" type="text/css" />
+	<link href="framework/css-framework.css" rel="stylesheet" type="text/css" />
+	<link href="framework/layout-global.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="framework/jetendo-init.js"></script>
+	<script type="text/javascript" src="framework/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="framework/jetendo-no-listing.js"></script>
+	<script type="text/javascript" src="framework/jquery.cycle2.js"></script>
+	<script type="text/javascript" src="framework/jquery.cycle2.swipe.min.js"></script> 
+	<!-- place your css and js in these files -->
+	<link href="stylesheets/style.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="custom.js"></script>
+</head>
+
+<body>
+<header class="header z-index-2">
+	<div class="header-container ">
+		<div class="z-container">
+			<!-- Custom Header -->
+			Logo/header
+			<div class="main-menu z-ft-18 z-hide-at-992">
+				<!-- Custom Menu -->
+				Menu Links
+				<!-- like this maybe
+				<ul>
+					<li><a href="#">Link</a></li>
+					<li><a href="#">Link</a></li>
+					<li><a href="#">Link</a></li>
+					<li><a href="#">Link</a></li>
+					<li><a href="#">Link</a></li>
+				</ul> -->
+			</div>
+		</div>
+	</div>
+	<!-- Mobile Menu -->
+	<div class="mobile-menu">
+		<a href="#" class="z-mobileMenuButton">&#9776; Menu</a>
+		<div id="myMenu1" class="z-mobileMenuDiv z-mobileMenuTranslateXLeftOffscreen" data-column-gap="30" data-open-class="z-mobileMenuTranslateX">
+			<div class="z-h-30 z-show-at-767">Menu</div>
+			<!--- don't use ul/li for mobile menu! --->
+			<nav class="z-center-children">
+				<div><a href="#">Link</a></div>
+				<div><a href="#">Link</a></div>
+				<div><a href="#">Link</a></div>
+				<div><a href="#">Link</a></div>
+				<div><a href="#">Link</a></div>
+				<div><a href="#">Link</a></div>
+			</nav>
+		</div>
+	</div>
+</header>
+
+
+<!-- Slideshow example -->
+<section class="slider z-index-1">
+	<div>
+		<!-- If you need to use div instead of img, be sure to change >img to >div in data-cycle-slides=">img" below -->
+		<div id="slideshowHomeDiv1" data-cycle-progressive="#homePhotoSlides1" data-cycle-swipe="true" data-cycle-swipe-fx="scrollHorz" data-cycle-log="false" data-cycle-slides=">img">
+		<!-- The first image goes here -->
+			<img src="" alt="" style="max-width:100%; width: 100%;" /> 
+		</div>
+		
+		<!-- 
+		All other images here separated by -~- 
+		-->
+		<script id="homePhotoSlides1" type="text/cycle" data-cycle-split="-~-">
+			<img src="" alt="" style="max-width:100%; width: 100%;" />
+			-~-
+			<img src="" alt="" style="max-width:100%; width: 100%;" />
+		</script>
+	</div>
+</section>
+
+<section class="page-title">
+	<div class="z-container z-center-children">
+		<h1>Title</h1>
+	</div>
+</section>
+
+<section class="z-pv-40">
+	<div class="z-container"> 
+		<div class="z-1of3">Column 1</div>
+		<div class="z-1of3">Column 2</div>
+		<div class="z-1of3">Column 3</div>
+	</div>
+</section>
+
+<!-- add more sections -->
+
+<footer class="footer z-pv-20">
+	<div class="z-container z-center-children">
+		<div class="footer-logo z-1of5 z-pv-0 z-text-center z-fluid-at-992">
+			Logo
+		</div>
+		<div class="z-1of5 z-ft-18 z-pv-0">  
+			<a href="#">Link</a> 
+		</div>
+		<div class="z-1of5 z-ft-18 z-pv-0">  
+			<a href="#">Link</a> 
+		</div>
+		<div class="z-1of5 z-ft-18 z-pv-0">  
+			<a href="#">Link</a> 
+		</div>
+		<div class="footer-address z-1of5 z-ft-14 z-pv-0">
+			<p><strong>Company</strong></p>
+			<p>Address<br />
+				Phone: (123) 555-1234<br />
+				Fax: (123) 555-1234<br />
+				<a href="#" style="text-decoration: underline;">Contact Us</a>
+			</p>
+		</div>
+	</div>
+</footer>
+<footer class="copyright z-pv-10">
+	<div class="z-container">
+		<div class="z-column z-t-16">
+			<div class="z-1of2">
+				Copyright &copy; 2016 Company. All Rights Reserved.
+			</div>
+			<div class="z-1of2 z-text-right">
+				Website by Zgraph, Inc. <a href="http://www.zgraph.com" target="_blank">Florida Web Design</a>
+			</div>
+		</div>
+	</div>
+</footer>
+
+</body>
+</html>
