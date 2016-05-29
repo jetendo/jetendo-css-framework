@@ -11,9 +11,9 @@ Breakpoint Helpers
 Image
 Menu
 Equal Heights
+Element Queries
 Other
 Animation
-
 
 Overview
 	
@@ -377,7 +377,7 @@ Menu
 	
 	Example:
 	<div class="mobile-menu">
-		<a href="##" class="z-mobileMenuButton">&##9776; Menu</a>
+		<a href="#" class="z-mobileMenuButton">&#9776; Menu</a>
 		<div id="myMenu1" class="z-mobileMenuDiv z-mobileMenuTranslateXLeftOffscreen" data-column-gap="30" data-open-class="z-mobileMenuTranslateX">
 			<div class="z-h-30 z-show-at-767">Menu</div>
 			<!--- don't use ul/li for mobile menu! --->
@@ -525,6 +525,35 @@ Equal Heights
 	</div>
 
 	Notice the above example also has data-column-count="3" which is optional.  These features can be combined or used separately.  If you combine data-children-class with data-column-count, it will do the height calculations separately for each row, but it will operate on the custom selected children instead.   
+	
+Element Queries
+	Instead of using media queries to change the layout based on the screen size, we have created a CSS/JS solution for changing the layout of specific elements based on the width of their parent container.   This lets you build complex layouts that are reusable inside different size containers.  You start by adding the class "z-breakpoint" and then the "data-breakpoints" attribute is set to a comma separated list of the custom breakpoints you want to define. 
+	A class will be assigned the to the element with z-breakpoint on it when the width of the parent container is less then or equal to the breakpoints.   The class will be named "z-breakpoint-" plus the breakpoint number.  So if the parent width was 690 in the example below, a class called z-breakpoint-700 would be added to the element.
+
+	You can use the class (z-breakpoint-700, etc) to change the layout.  Example CSS is included below.  Notice that there is no space between .big-column and .z-breakpoint-700 in the selector.  This is important, because we need both of them for the class to be applied so that other sections of the page are not affected.
+	
+	Note that if you had defined a different breakpoint such as 450, the class would be called z-breakpoint-450 instead.  There are no predefined sizes built-in.
+	
+	Example:
+	<style type="text/css"> 
+	/* z-breakpoint should be written mobile first */
+	.section-1 .big-column{ width:100%; height:100px; background-color:#CCC; padding:20px; float:left; margin-right:20px; margin-bottom:20px;} 
+	.section-1 .big-column.z-breakpoint-300:before{content:"Breakpoint 300 applied";}
+	.section-1 .big-column.z-breakpoint-300{width:100%; background-color:#CCF;}
+	.section-1 .big-column.z-breakpoint-500:before{content:"Breakpoint 500 applied";}
+	.section-1 .big-column.z-breakpoint-500{ background-color:#CFC;}
+	.section-1 .big-column.z-breakpoint-700:before{content:"Breakpoint 700 applied";}
+	.section-1 .big-column.z-breakpoint-700{  background-color:#FCC;}
+	</style>
+	<section class="section-1">
+		<div class="z-container"> 
+				<div class="z-2of3">
+					<div class="big-column z-breakpoint" data-breakpoints="700,500,300">
+					Resize window to see the breakpoint changes
+					</div> 
+			</div>
+		</div>
+	</section>
 	
 Animation
 
