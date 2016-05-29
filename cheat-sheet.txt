@@ -6,11 +6,15 @@ z-container
 z-center-children - makes direct children div or a center using display:inline-block;
 z-column - 1 column grid with default margin/padding
 z-1of3  (grids exist for 1 to 7, 12 and 16)
-z-offset1of3
+z-offset-1of3
 z-h-12 to z-h-70 - scalable font size all headings
 z-t-12 to z-t-70 - scalable font size all non-headings
 z-fh-12 to z-fh-70 - fixed font size all headings
 z-ft-12 to z-ft-70 - fixed font size all non-headings
+z-text-left, z-text-center, z-text-right
+z-text-white, z-text-black, z-text-white-transparent, z-text-black-transparent  - changes link color too
+z-border-white-1, z-border-black-1, z-border-white-2, z-border-black-2
+z-bg-white, z-bg-black, z-bg-white-transparent, z-bg-black-transparent - also changes text/link colors to opposite
 zForceNegativeMarginLeft - use on img to touch left edge of screen
 zForceNegativeMarginRight - use on img to touch right edge of screen
 z-radius-5, z-radius-10, z-radius-15

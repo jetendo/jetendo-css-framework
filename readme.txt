@@ -172,7 +172,7 @@ Grid Offset
 
 	Example: With a 7 column grid, you could have first 2 columns empty on the left, a 3 column block, and 1 column empty on the right using an offset class like this:
 	<div class="z-container">
-		<div class="z-offset2of7 z-3of7">
+		<div class="z-offset-2of7 z-3of7">
 		</div>
 	</div>
 	
@@ -333,6 +333,9 @@ Typography
 	
 	There are classes for text alignment including: z-text-left, z-text-center and z-text-right
 	
+	Change text and link color quickly to white or black.  Transparent versions will let background color passthrough slightly.
+	z-text-white, z-text-black, z-text-white-transparent, z-text-black-transparent
+
 	Between z-h-12 and z-h-70 should be used for all heading font sizes, or h1 through h6 can be used instead.  h1 should only be used for the main title, and not repeated on other areas, unless separated by these html5 tags: <article>, <section>, <nav> or <aside>
 	
 	Between z-t-12 and z-t-70 should be used for all non-heading font sizes or leave it to inherit.
@@ -461,6 +464,12 @@ Other
 		z-radius-5
 		z-radius-10
 		z-radius-15
+		
+	Quickly set white or black border of 1 or 2 pixels with these classes:
+		z-border-white-1, z-border-black-1, z-border-white-2, z-border-black-2
+		
+	Quickly set white or black background with these classes.  Text/link colors are also set to the opposite.
+		z-bg-white, z-bg-black, z-bg-white-transparent, z-bg-black-transparent
 
 	Buttons should use the z-button class unless they are very custom. Example:
 		<a href="#" class="z-button">More Info</a>
