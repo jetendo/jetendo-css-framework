@@ -1,0 +1,43 @@
+This is an abbreviated form of the documentation to be used a quick reference.
+
+always make styles select the section by class name - example:  .section-1 .subclass{ }
+section, aside, article, nav, header, footer
+z-container
+z-center-children - makes direct children div or a center using display:inline-block;
+z-column - 1 column grid with default margin/padding
+z-1of3  (grids exist for 1 to 7, 12 and 16)
+z-offset1of3
+z-h-12 to z-h-70 - scalable font size all headings
+z-t-12 to z-t-70 - scalable font size all non-headings
+z-fh-12 to z-fh-70 - fixed font size all headings
+z-ft-12 to z-ft-70 - fixed font size all non-headings
+zForceNegativeMarginLeft - use on img to touch left edge of screen
+zForceNegativeMarginRight - use on img to touch right edge of screen
+z-radius-5, z-radius-10, z-radius-15
+z-index-1, z-index-2, z-index-3
+z-equal-heights
+	variations:
+	class="z-equal-heights" data-column-count="3"
+	class="z-equal-heights" data-column-count="3" data-children-class=".body"
+z-table
+	z-table-center
+	z-table-top-center
+	z-table-bottom-center
+	z-table-top-left
+	z-table-top-right
+	z-table-center-left
+	z-table-center-right
+	z-table-bottom-left
+	z-table-bottom-right
+	z-table-bottom-left
+z-left-sidebar (combine with class="z-column z-reverse-order" on parent to make it last in html)
+z-right-sidebar (combine with class="z-column" on parent)
+z-fill-width (combine with z-column on same element)
+z-p-10 - also can use pt, pr, pb, pl, pv, ph, pv-0-auto and ph-0-auto - between 0 and 150 in intervals of 10
+z-m-10 - also can use mt, mr, mb, ml, mv, mh, mv-0-auto and mh-0-auto - between 0 and 150 in intervals of 10
+zOnAnimateOnVisible example:
+	class="classForInitialState zOnAnimateOnVisible z-transition-all" data-visible-class="classToAnimateTo"
+z-fluid, z-fluid-at-992, z-fluid-at-767, z-fluid-at-479
+z-show-at-1362, z-show-at-992, z-show-at-767, z-show-at-479
+z-hide-at-1362, z-hide-at-992, z-hide-at-767, z-hide-at-479
+Breakpoints are 1362px, 992, 767, 479 
