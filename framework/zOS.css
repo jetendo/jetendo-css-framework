@@ -603,7 +603,7 @@ object{border:none;}
 .zmember-openid-buttons input, .zmember-openid-buttons button, .zmember-openid-buttons a:link, .zmember-openid-buttons a:visited{font-size:14px;margin:0px; padding:0px; cursor:pointer; margin-right:5px; margin-bottom:4px; margin-top:4px; text-decoration:none;display:block; float:left; padding:4px; height:30px; width:170px; border:1px solid #999; background-color:#FFF;color:#000; border-radius:4px; }
 .zmember-openid-buttons a:link, .zmember-openid-buttons a:visited{width:auto !important;}
 .zmember-openid-buttons button:hover, .zmember-openid-buttons a:hover{background-color:#CFC; color:#000; }
-.zmember-openid-buttons button{ width:180px; height:35px;}
+.zmember-openid-buttons button{ padding-left:0px !important; padding-right:0px !important; width:180px; height:35px;}
 .zmember-openid-buttons input{cursor:text; background-color:#F9F9F9;}
 .zmember-openid-buttons input:focus{background-color:#FFF;}
 #openidurl{height:25px; width:95%; max-width:355px;}
@@ -622,7 +622,26 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .z-search-link-date{width:100%;  font-style:italic; float:left; }
 .z-search-nav{width:100%; float:left; }
 
+.zImageLeft{margin-right:10px; margin-bottom:10px; float:left; }
+.zImageDefault{ margin-bottom:10px; }
+.zImageRight{margin-left:10px; margin-bottom:10px; float:right; }
+.zEditorHTML iframe{ max-width:100% !important;}
+.zEditorHTML img{ margin-right:10px; margin-left:10px; margin-bottom:10px; }
+
+
+@media (max-width:992px){
+	.zEditorHTML img{ height:auto !important; width:auto !important; max-width:50%; min-width:150px; }
+	.zImageLeft{ height:auto !important; width:auto !important; max-width:50%; }
+	.zImageDefault{height:auto !important; width:auto !important; max-width:100%; }
+	.zImageRight{height:auto !important; width:auto !important; max-width:50%; }
+}
+
 @media (max-width:767px){
+	.zEditorHTML img{margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%;  float:none !important; min-width:auto;}
+	.zImageLeft{ margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%; float:none !important; }
+	.zImageDefault{float:none !important;}
+	.zImageRight{ margin-left:0px; height:auto !important; width:auto !important; max-width:100%; float:none !important; }
+
 	.zinquiry-form-table input, .zinquiry-form-table select, .zinquiry-form-table textarea{max-width:150px;}
 }
 @media (max-width: 680px){
