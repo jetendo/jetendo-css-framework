@@ -478,6 +478,12 @@ Other
 		<div class="z-center-children">
 			<a href="#" class="z-button">More Info</a>
 		</div>
+		
+	You can float an element left or right using these classes:
+		z-float-left, z-float-right
+	
+	You can float:left and width:100%; with this class:
+		z-float
 	
 	z-index
 		Quickly set z-index to 1, 2 or 3 and position:relative using these classes: 

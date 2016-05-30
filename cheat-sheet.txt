@@ -19,6 +19,8 @@ zForceNegativeMarginLeft - use on img to touch left edge of screen
 zForceNegativeMarginRight - use on img to touch right edge of screen
 z-radius-5, z-radius-10, z-radius-15
 z-index-1, z-index-2, z-index-3
+z-float, z-float-left, z-float-right
+z-clear
 z-equal-heights
 	variations:
 	class="z-equal-heights" data-column-count="3"
