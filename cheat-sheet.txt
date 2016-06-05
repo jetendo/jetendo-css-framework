@@ -52,3 +52,27 @@ Element Query Example:
 	.big-column.z-breakpoint-700{  }
 	.big-column.z-breakpoint-500{  }
 	.big-column.z-breakpoint-300{  }
+	
+z-overlay-bottom
+css arrows:
+		<span class="z-arrow-right-10" style="border-left-color:#F00;"></span>
+		<span class="z-arrow-left-10" style="border-right-color:#F00;"></span>
+		<span class="z-arrow-top-10" style="border-bottom-color:#F00;"></span>
+		<span class="z-arrow-bottom-10" style="border-top-color:#F00;"></span>
+gradients:
+		z-bg-black-gradient-fade-down-80
+		z-bg-white-gradient-fade-down-80
+		z-bg-black-gradient-fade-up-80
+		z-bg-white-gradient-fade-up-80
+		z-bg-black-gradient-fade-down-100
+		z-bg-white-gradient-fade-down-100
+		z-bg-black-gradient-fade-up-100
+		z-bg-white-gradient-fade-up-100
+		z-bg-white-gradient-middle-fade-down-80
+		z-bg-white-gradient-middle-fade-up-80
+		z-bg-white-gradient-middle-fade-down-100
+		z-bg-white-gradient-middle-fade-up-100
+		z-bg-black-gradient-middle-fade-down-80
+		z-bg-black-gradient-middle-fade-up-80
+		z-bg-black-gradient-middle-fade-down-100
+		z-bg-black-gradient-middle-fade-up-100

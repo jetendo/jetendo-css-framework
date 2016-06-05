@@ -492,6 +492,38 @@ Other
 		
 		This is useful when dealing with negative margin overlays, slideshows or other things that use custom positioning.
 	
+	z-overlay-bottom
+		This class forces the element to the bottom of the container.  Requires z-index-1 or position:relative to be set on the container because it uses absolute positioning.   This helps you eliminate the need for typing a specific height or negative margin of an overlay.
+		<a href="#" class="z-index-1 z-1of3">
+			<span class=" z-overlay-bottom z-p-10">Title</span>  	
+			<img src="/images/photo3.jpg" alt="thumb" class="z-fluid z-float-left" />
+		</a>
+	
+	Added CSS arrows that rely on changing the border color, instead of using images.  Examples:
+		<span class="z-arrow-right-10" style="border-left-color:#F00;"></span>
+		<span class="z-arrow-left-10" style="border-right-color:#F00;"></span>
+		<span class="z-arrow-top-10" style="border-bottom-color:#F00;"></span>
+		<span class="z-arrow-bottom-10" style="border-top-color:#F00;"></span>
+
+	White and black gradients gradients.   Automatically sets opposite text color.   The middle classes fade closer to the edge instead of a continuous fade.
+	
+		z-bg-black-gradient-fade-down-80
+		z-bg-white-gradient-fade-down-80
+		z-bg-black-gradient-fade-up-80
+		z-bg-white-gradient-fade-up-80
+		z-bg-black-gradient-fade-down-100
+		z-bg-white-gradient-fade-down-100
+		z-bg-black-gradient-fade-up-100
+		z-bg-white-gradient-fade-up-100
+		z-bg-white-gradient-middle-fade-down-80
+		z-bg-white-gradient-middle-fade-up-80
+		z-bg-white-gradient-middle-fade-down-100
+		z-bg-white-gradient-middle-fade-up-100
+		z-bg-black-gradient-middle-fade-down-80
+		z-bg-black-gradient-middle-fade-up-80
+		z-bg-black-gradient-middle-fade-down-100
+		z-bg-black-gradient-middle-fade-up-100
+
 	
 Equal Heights
 	Force equal heights on children elements using z-equal-heights.  Example:
