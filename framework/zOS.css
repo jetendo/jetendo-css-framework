@@ -628,8 +628,40 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .zEditorHTML iframe{ max-width:100% !important;}
 .zEditorHTML img{ margin-right:10px; margin-left:10px; margin-bottom:10px; }
 
+.zcontent-subpage-div{display:table; width:100%;margin-bottom:20px; }
+.zcontent-imagethumbwidth{ display:table-cell; max-width:100%; vertical-align:top; }
+.zcontent-imagethumbwidth img{max-width:90% !important;}
+.z-content-text-div{vertical-align:top; max-width:100%;  display:table-cell;}
+
+.z-content-subpage-button, .z-content-subpage-button:link, .z-content-subpage-button:visited {
+	display: inline-block; 
+	padding:5px;
+	color: #FFFFFF;
+	background: rgba(60,60,60, 0.7);
+	text-align: center;
+	cursor: pointer;
+	outline: 0;
+	border: none;
+	transition:background 0.5s;
+	text-decoration: none;
+}
+.z-content-subpage-button:hover {
+	background: rgba(60,60,60, 1.0);
+	color:#FFF;
+}
+.zCreateNewContainer{width:130px; position:relative; padding-top:10px; padding-right:5px; float:right;}
+.zCreateNewContainer .zCreateDropMenu{ display:none; }
+.zCreateNewContainer:hover .zCreateDropMenu{ padding:5px; background-color:#FFF; text-align:left; position:absolute; 
+	display:block; float:left; top:40px; left:0px; width:230px; }
+.zCreateNewContainer .zCreateNewButton{width:100%;border-radius:5px;}
+.zCreateDropMenu a:link, .zCreateDropMenu a:visited{ border-radius:5px; transition:all ease 0.3s; text-decoration:none; color:#000; display:inline-block; padding:5px; width:100%;}
+.zCreateDropMenu a:hover{ background-color:#369; color:#FFF;}
 
 @media (max-width:992px){
+	.zcontent-subpage-div{display:block; float:left; width:100%;margin-bottom:20px; }
+	.zcontent-imagethumbwidth{width:30% !important; min-width:150px; float:left; display:block;}
+	.z-content-text-div{vertical-align:top; width:70% !important; max-width:100% !important; display:block; float:left;}
+
 	.zEditorHTML img{ height:auto !important; width:auto !important; max-width:50%; min-width:150px; }
 	.zImageLeft{ height:auto !important; width:auto !important; max-width:50%; }
 	.zImageDefault{height:auto !important; width:auto !important; max-width:100%; }
@@ -637,6 +669,10 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 }
 
 @media (max-width:767px){
+
+	.zcontent-imagethumbwidth{width:100% !important; min-width:280px; float:left; display:block; padding-bottom:10px;}
+	.z-content-text-div{vertical-align:top; width:100% !important; max-width:100% !important;  display:block; float:left;}
+
 	.zEditorHTML img{margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%;  float:none !important; min-width:auto;}
 	.zImageLeft{ margin-left:0px; margin-right:0px;  height:auto !important; width:auto !important; max-width:100%; float:none !important; }
 	.zImageDefault{float:none !important;}

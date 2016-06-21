@@ -1,23 +1,5 @@
 /* this file is for a standalone jetendo css framework */
 
-body{ margin:0px; line-height:1.3;  }
-form{ margin:0px; padding:0px;}
-img{border-style:none;}
-
-*, img{
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing:border-box;
-}
-header,
-nav,
-section,
-aside,
-article,
-footer, .z-section, .z-row{
-	width:100%; float:left; min-height:1px;
-}
-
 .z-center-children{ text-align:center; font-size:0px;} 
 .z-center-children > div, .z-center-children > a{ display:inline-block; text-align:left; vertical-align:top; float:none; }
 .z-container{margin:0 auto;width:1260px;}
@@ -373,9 +355,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', e
 	.z-mobileMenuDiv li{list-style:none;}
 	.z-mobileMenuDiv{display:block; background-color:#093e6a; width:100%; float:left;}
 
-	.z-mobileMenuDiv a{ display:block; padding:10px 20px; font-size:16px !important;   color:#FFF; text-decoration:none;}
+	.z-mobileMenuDiv a{ display:block; white-space:nowrap; padding:10px 20px; font-size:16px !important;   color:#FFF; text-decoration:none;}
 	.z-mobileMenuDiv nav{visibility:hidden;}
 }
+
 @media screen and (max-width:767px) {
 
 	.z-column{ margin-left:0px; margin-right:0px; } 

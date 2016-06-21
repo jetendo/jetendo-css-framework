@@ -341,12 +341,14 @@
 		
 		}); 
 	}
+
+
+	
 	zArrResizeFunctions.push({functionName:zSetupLazyLoadImages});
 
-
-	// add class="zForceChildEqualHeights" data-column-count="2" to any element and all the children will have heights made equal for each row. You can change 480 to something else with this optional attribute: data-single-column-width="768"
+	// add class="z-equal-heights" data-column-count="2" to any element and all the children will have heights made equal for each row. You can change 480 to something else with this optional attribute: data-single-column-width="768"
 	// if data-children-class is specified, the equal heights will be performed on the elements matching the class instead of the children of the container.
-	function zForceChildEqualHeights(children){  
+	function forceChildEqualHeights(children){  
 		var lastHeight=0; 
 		$(children).height("auto");
 		$(children).each(function(){  
@@ -360,7 +362,7 @@
 		} 
 		$(children).height(lastHeight); 
 	} 
-	function forceChildAutoHeightFix(){  
+	function zForceChildEqualHeights(){  
 		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
 		// we need to determine when all images are done loading and then run equal heights again for each row to ensure equal heights works correctly.
@@ -434,20 +436,19 @@
 						images.bind("load", function(e){
 							c.imagesLoaded++;
 							if(c.imagesLoaded>images.length){ 
-								zForceChildEqualHeights(c.children);  
+								forceChildEqualHeights(c.children);  
 							}
 						});
 					}
 				}
-				zForceChildEqualHeights(c.children); 
+				forceChildEqualHeights(c.children); 
 			}
 		}); 
 		if($(".z-equal-height").length > 0){
 			console.log("The class name should be z-equal-heights, not z-equal-height");
 		}
 	}
-	zArrResizeFunctions.push({functionName:forceChildAutoHeightFix });
- 
+	zArrResizeFunctions.push({functionName:zForceChildEqualHeights });
 
 	function setupMobileMenu() {
 		if($(".z-mobileMenuButton").length==0){
@@ -773,6 +774,7 @@
 		setTimeout(zAnimateVisibleElements, 100);
 	});
 
+ 	window.zForceChildEqualHeights=zForceChildEqualHeights;
 	window.zIsVisibleOnScreen=zIsVisibleOnScreen;
 })(jQuery, window, document, "undefined"); 
 
@@ -4025,9 +4027,9 @@ var zLoggedIn=false;
 	var zLoggedInTimeoutID=false;
 
 	zArrDeferredFunctions.push(function(){
-		if(zIsTestServer() || zIsDeveloper()){
+		/*if(zIsTestServer() || zIsDeveloper()){
 			return;
-		}
+		}*/
 		zLoggedInTimeoutID=setInterval(function(){
 			zLoggedIn=zIsLoggedIn(); 
 			if((typeof zUserLoggedIn != "undefined" || zWasLoggedIn) && !zLoggedIn){
@@ -6104,6 +6106,12 @@ function zCalculateMonthlyPayment(){
 			zModalIndex=0;
 		}
 	}
+
+	function zShowGridEditorWindow(link){
+		var windowSize=zGetClientWindowSize();
+		var modalContent1='<iframe src="'+link+'"  style="margin:0px;border:none; overflow:auto;" seamless="seamless" width="100%" height="95%"><\/iframe>';		
+		zShowModal(modalContent1,{'width':windowSize.width-100,'height':windowSize.height-100});
+	}
 	
 	function zShowImageUploadWindow(imageLibraryId, imageLibraryFieldId, imageCountId){
 		var windowSize=zGetClientWindowSize();
@@ -6137,6 +6145,7 @@ function zCalculateMonthlyPayment(){
 	if(typeof window.zModalCancelFirst == "undefined"){
 		window.zModalCancelFirst=false;
 	}
+	window.zShowGridEditorWindow=zShowGridEditorWindow;
 	window.zModalLockPosition=zModalLockPosition;
 	window.zShowModalStandard=zShowModalStandard;
 	window.zFixModalPos=zFixModalPos;
@@ -6323,12 +6332,11 @@ var zHumanMovement=false;
 			target.onmousedown=function(){return false;};
 		}
 	}
-	function zMouseHitTest(object, marginInPixels){
+	function zMouseHitTest(object, marginInPixels){ 
 		var p=zGetAbsPosition(object);
 		if(typeof marginInPixels == "undefined"){
 			marginInPixels=0;
-		}
-		//console.log(p.x+":"+p.y+":"+p.width+":"+p.height+":"+zMousePosition.x+":"+zMousePosition.y);
+		} 
 		if(p.x-marginInPixels <= zMousePosition.x){
 			if(p.x+p.width+marginInPixels >= zMousePosition.x){
 				if(p.y-marginInPixels <= zMousePosition.y){
@@ -6337,7 +6345,7 @@ var zHumanMovement=false;
 					}
 				}
 			}
-		}
+		} 
 		return false;
 	}
 
@@ -6393,7 +6401,7 @@ var zHumanMovement=false;
 			$('body').append('<div id="zOverEditDivTag" style="z-index:20001;  position:absolute; background-color:#FFFFFF; display:none; cursor:pointer; left:0px; top:0px; width:50px; height:27px; text-align:center; font-weight:bold; line-height:18px; "><a id="zOverEditATag" href="##" class="zNoContentTransition" target="_top" title="Click EDIT to edit this content">EDIT</a></div>');
 			
 			$("#zOverEditATag").bind("click", function(){
-				if(zIsAdminLoggedIn()){
+				if(typeof zIsAdminLoggedIn != "undefined" && zIsAdminLoggedIn()){
 					zLoadOverEditButton();
 					zOverEditClick();
 					return false;
@@ -6402,7 +6410,7 @@ var zHumanMovement=false;
 		}
 	}
 	$(".zOverEdit").bind("mouseover", function(){
-		if(zIsAdminLoggedIn()){
+		if(typeof zIsAdminLoggedIn != "undefined" && zIsAdminLoggedIn()){
 			zLoadOverEditButton();
 			var u=$(this).attr("data-editurl");
 			if(u != ""){
@@ -6715,9 +6723,10 @@ var zScrollbarWidth=0;
 			if(typeof arrParent[this.parentNode.id] == "undefined"){
 				arrParent[this.parentNode.id]=0;
 			}
-			//var pos=zGetAbsPosition(this);
-			//var height=pos.height;  
-			var height=$(this).height();
+			var pos=zGetAbsPosition(this);
+			var height=pos.height;  
+			var height2=$(this).height();
+			height=Math.max(height,height2);
 			if(height>arrParent[this.parentNode.id]){
 				arrParent[this.parentNode.id]=height;
 			}
@@ -9272,9 +9281,10 @@ function zLoadListingSavedSearches(){
 		tempObj.id="zListingSavedSearchAjax"+ssid;
 		tempObj.cache=false;
 		tempObj.method="get"; 
+		
 		tempObj.callback=function(d){   
 			try{
-				var r=eval("("+d+")");
+				var r=JSON.parse(d); 
 				if(r.success){ 
 					$(currentDiv).html(r.listingOutput);
 					if(ssid in arrMap){
@@ -9321,7 +9331,7 @@ function zListingLoadSavedCart(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d);
 			if(r.success){ 
 				if($("#sl894nsdh783").length==0){
 					$("#zTopContent").append('<div id="sl894nsdh783" style="width:100%; float:left; clear:both;"></div>');
@@ -9342,7 +9352,10 @@ function zListingLoadSavedCart(){
 	}
 }
 
+
+
 zArrDeferredFunctions.push(zListingLoadSavedCart);
+
 
 function zSetupListingCartButtons(){
 
@@ -9353,7 +9366,7 @@ function zSetupListingCartButtons(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d); 
 			if(r.success){ 
 				zListingLoadSavedCart();
 			}else{
@@ -9367,6 +9380,7 @@ function zSetupListingCartButtons(){
 		zAjax(tempObj);   
 	}); 
 
+
 	$(document).on("click", ".zls-removeListingButton", function(e){
 		e.preventDefault();
 		var tempObj={};
@@ -9374,7 +9388,7 @@ function zSetupListingCartButtons(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d); 
 			if(r.success){ 
 				zListingLoadSavedCart();
 			} 
@@ -9391,7 +9405,7 @@ function zSetupListingCartButtons(){
 		tempObj.cache=false;
 		tempObj.method="get"; 
 		tempObj.callback=function(d){  
-			var r=eval("("+d+")");
+			var r=JSON.parse(d);
 			if(r.success){ 
 				zListingLoadSavedCart();
 			} 
@@ -9486,12 +9500,9 @@ function zInactiveCheckLoginStatus(f){
 }
 
 
-
-
-
 function getMLSTemplate(obj,row){
 	var arrR=new Array();
-	arrR.push('<table><tr><td valign="top" wid'+'th="110" style="font-size:10px; font-style:italic;"><div class="listing-l-img"><a href="#URL#"><img src="#PHOTO1#" alt="#TITLE#" width="100" height="78" class="listing-d-im'+'g"></a></div>ID##MLS_ID#-#LISTING_ID#</td><td valign="top"><h2><a href="#URL#" style="text-decoration:none; ">#TITLE#</a></h2><span>#DESCRIPTION#</span><span class="listing-l-l'+'inks" style="padding-bottom:0px; "><a href="#URL#" class="zcontent-readmore-link">Read More</a><a href="/z/listing/inquiry/index?acti'+'on=form&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Send An Inquiry</a><a href="/z/listing/sl/index?save'+'Act=check&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Save Listing</a>');
+	arrR.push('<table><tr><td valign="top" wid'+'th="110" style="font-size:10px; font-style:italic;"><div class="listing-l-img"><a href="#URL#"><img src="#PHOTO1#" alt="#TITLE#" style="max-width:100%;" class="listing-d-im'+'g"></a></div>ID##MLS_ID#-#LISTING_ID#</td><td valign="top"><h2><a href="#URL#" style="text-decoration:none; ">#TITLE#</a></h2><span>#DESCRIPTION#</span><span class="listing-l-l'+'inks" style="padding-bottom:0px; "><a href="#URL#" class="zcontent-readmore-link">Read More</a><a href="/z/listing/inquiry/index?acti'+'on=form&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Send An Inquiry</a><a href="/z/listing/sl/index?save'+'Act=check&mls_id=#MLS_ID#&listing_id=#LISTING_ID#" rel="nofollow">Save Listing</a>');
 	if(obj["VIRTUAL_TOUR"][row] !== ""){
 		arrR.push('<a href="#VIRTUAL_TOUR#" target="_blank" rel="nofollow">View Virtual Tour</a>');
 	}
