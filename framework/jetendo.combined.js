@@ -589,9 +589,11 @@
 				return;
 			}
 			var sLen=currentMenu.arrItem.length;
+			var totalWidth1=0;
 			for(var i=0;i<sLen;i++){ 
 				var jItem=$(currentMenu.arrItem[i]);
 	 			jItem.width("auto");
+	 			totalWidth1+=jItem.width();
 	 			//console.log("new auto width:"+jItem.width());
 				var curWidth=jItem.width();
 				var borderLeft=parseInt(jItem.css("border-left-width"));
@@ -634,6 +636,7 @@
 				currentMenu.arrItemBorderAndPadding.push(curBorderAndPadding);
 				currentMenu.arrItemWidth.push(curWidth);
 			} 
+			//console.log('totalWidth:'+totalWidth1);
 			if(equalDisabled){
 				$("#"+containerDivId+" nav").css("visibility", "visible");
 				return;
@@ -650,7 +653,8 @@
 			var totalWidth = currentMenu.containerWidth;//-2;
 			var navWidth = 0;
 			var deltaWidth = totalWidth - (currentMenu.navWidth);// + currentMenu.marginSize);
-			var padding = Math.floor((deltaWidth / currentMenu.arrItem.length) / 2);// - (currentMenu.marginSize/2); 
+			var padding = Math.max(10, Math.floor((deltaWidth / currentMenu.arrItem.length) / 2));// - (currentMenu.marginSize/2); 
+			//console.log('padding:'+padding);
 			var floatEnabled=false;
 			/*if(totalWidth<currentMenu.navWidth + ((currentMenu.arrItem.length-1)*currentMenu.marginSize)){
 				//padding=0;
@@ -665,6 +669,7 @@
 			} */
 			//console.log(containerDivId+":"+"marginSize:"+currentMenu.marginSize+" containerWidth:" +currentMenu.containerWidth+" totalWidth:"+totalWidth+" navWidth:"+currentMenu.navWidth+" deltaWidth:"+deltaWidth+" padding:"+padding);
 			var totalWidth2=0;
+			var totalWidth3=0;
 			var sLen=currentMenu.arrItem.length;
 
 			for(var i=0;i<sLen;i++){ 
@@ -683,7 +688,8 @@
 				curWidth=(curWidth/currentMenu.containerWidth);
 	 			newWidth=(Math.round(newWidth*100000)/1000)-0.001;
 	 			curWidth=(Math.round(curWidth*100000)/1000)-0.001; 
-				if(sLen-1 == i){
+				if(false && sLen-1 == i){
+					// this doesn't work
 					
 					newWidth=(currentMenu.containerWidth-totalWidth2);
 		 			addWidth=newWidth;
@@ -715,8 +721,11 @@
 					});
 						
 				}
+				//console.log('newWidth:'+newWidth+" | curWidth:"+curWidth);
 				totalWidth2+=Math.round(addWidth+marginSize);
+				totalWidth3+=newWidth;
 			} 
+		//console.log('totalWidth3:'+totalWidth3);
 			$("#"+containerDivId).append(currentMenu.ul);
 			$("#"+containerDivId+" nav").css("visibility", "visible");
 		}
