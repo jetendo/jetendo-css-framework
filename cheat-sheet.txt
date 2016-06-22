@@ -13,13 +13,17 @@ z-fh-12 to z-fh-70 - fixed font size all headings
 z-ft-12 to z-ft-70 - fixed font size all non-headings
 z-text-left, z-text-center, z-text-right
 z-text-white, z-text-black, z-text-white-transparent, z-text-black-transparent  - changes link color too
+z-italic
+z-bold
+z-bold-italic
+z-normal - changes font to normal
 z-border-white-1, z-border-black-1, z-border-white-2, z-border-black-2
 z-bg-white, z-bg-black, z-bg-white-transparent, z-bg-black-transparent - also changes text/link colors to opposite
 zForceNegativeMarginLeft - use on img to touch left edge of screen
 zForceNegativeMarginRight - use on img to touch right edge of screen
 z-radius-5, z-radius-10, z-radius-15
 z-index-1, z-index-2, z-index-3
-z-float, z-float-left, z-float-right
+z-float, z-float-left, z-float-right, z-float-none, z-float-none-important
 z-clear
 z-equal-heights
 	variations:

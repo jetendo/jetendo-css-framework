@@ -48,6 +48,12 @@
 .z-float{ float:left; width:100%; }
 .z-float-left{ float:left; }
 .z-float-right{ float:right; }
+.z-float-none{ float:none; }
+.z-float-none-important{ float:none !important; }
+.z-italic { font-style: italic; }
+.z-bold { font-weight: bold; }
+.z-bold-italic { font-style: italic; font-weight: bold; }
+.z-normal { font-style: normal; font-weight: normal; }
 
 .z-button, .z-button:link, .z-button:visited, .z-container input[type="submit"], .z-container input[type="button"], .z-container button {
 	display: inline-block; 

@@ -333,6 +333,12 @@ Typography
 	
 	There are classes for text alignment including: z-text-left, z-text-center and z-text-right
 	
+	Change font:
+		z-italic
+		z-bold
+		z-bold-italic
+		z-normal - changes font to normal
+	
 	Change text and link color quickly to white or black.  Transparent versions will let background color passthrough slightly.
 	z-text-white, z-text-black, z-text-white-transparent, z-text-black-transparent
 
@@ -481,6 +487,9 @@ Other
 		
 	You can float an element left or right using these classes:
 		z-float-left, z-float-right
+		
+	Disable float
+		z-float-none, z-float-none-important
 	
 	You can float:left and width:100%; with this class:
 		z-float
