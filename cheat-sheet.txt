@@ -17,6 +17,8 @@ z-italic
 z-bold
 z-bold-italic
 z-normal - changes font to normal
+z-uppercase
+z-no-bullets
 z-border-white-1, z-border-black-1, z-border-white-2, z-border-black-2
 z-bg-white, z-bg-black, z-bg-white-transparent, z-bg-black-transparent - also changes text/link colors to opposite
 zForceNegativeMarginLeft - use on img to touch left edge of screen

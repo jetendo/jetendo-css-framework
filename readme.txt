@@ -338,6 +338,8 @@ Typography
 		z-bold
 		z-bold-italic
 		z-normal - changes font to normal
+		z-uppercase
+		z-no-bullets
 	
 	Change text and link color quickly to white or black.  Transparent versions will let background color passthrough slightly.
 	z-text-white, z-text-black, z-text-white-transparent, z-text-black-transparent
