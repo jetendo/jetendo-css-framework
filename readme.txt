@@ -431,6 +431,9 @@ Visibility
 	z-hide-at-767
 	z-hide-at-479
 	
+	# set visibility to hidden and then visible when javascript dom ready has fired.
+		z-show-on-dom-ready
+	
 Breakpoint Helpers
 	Sometimes you need to disable any width / height / margin and force an element to max-width:100% so that it fills the container or screen.  This is very commonly needed on img tags.  You can use the z-fluid class to do this.
 	Example:

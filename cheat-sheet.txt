@@ -52,6 +52,7 @@ zOnAnimateOnVisible example:
 z-fluid, z-fluid-at-992, z-fluid-at-767, z-fluid-at-479
 z-show-at-1362, z-show-at-992, z-show-at-767, z-show-at-479
 z-hide-at-1362, z-hide-at-992, z-hide-at-767, z-hide-at-479
+z-show-on-dom-ready
 Breakpoints are 1362px, 992, 767, 479 
 Element Query Example:
 	<div class="big-column z-breakpoint" data-breakpoints="700,500,300"></div>

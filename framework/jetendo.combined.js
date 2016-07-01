@@ -435,13 +435,18 @@
 					if(c.imagesLoaded != images.length){
 						images.bind("load", function(e){
 							c.imagesLoaded++;
-							if(c.imagesLoaded>images.length){ 
-								forceChildEqualHeights(c.children);  
+							if(c.imagesLoaded>=images.length){ 
+								setTimeout(function(){
+									forceChildEqualHeights(c.children);  
+								}, 10);
 							}
 						});
 					}
 				}
 				forceChildEqualHeights(c.children); 
+				setTimeout(function(){ 
+					forceChildEqualHeights(c.children);  
+				}, 10);
 			}
 		}); 
 		if($(".z-equal-height").length > 0){
@@ -519,9 +524,13 @@
 
 	zArrDeferredFunctions.push(setupMobileMenu);
  
-
- 
 	zArrDeferredFunctions.push(function(){
+
+		$(".z-show-on-dom-ready").each(function(){
+			$(this).removeClass("z-show-on-dom-ready");
+		});
+
+
 		var arrOriginalMenuButtonWidth=[];
 		function setEqualWidthMobileMenuButtons(containerDivId, marginSize){ 
 			$("#"+containerDivId+" nav").css("visibility", "visible");  
@@ -690,7 +699,7 @@
 	 			curWidth=(Math.round(curWidth*100000)/1000)-0.001; 
 				if(false && sLen-1 == i){
 					// this doesn't work
-					
+
 					newWidth=(currentMenu.containerWidth-totalWidth2);
 		 			addWidth=newWidth;
 		 			newWidth=newWidth/currentMenu.containerWidth;
@@ -7088,6 +7097,14 @@ var zHelpTooltip=new Object();
 
 	function zTrackEvent(eventCategory,eventAction, eventLabel, eventValue, gotoToURLAfterEvent, newWindow){
 		// detect when google analytics is disabled on purpose to avoid running this.
+		if(gotoToURLAfterEvent != ""){
+			setTimeout(function(){ 
+				if(!newWindow){ 
+					console.log('event tracking failed - loading URL anyway: '+gotoToURLAfterEvent);
+					window.location.href = gotoToURLAfterEvent;
+				}
+			}, 1000); 
+		}
 		if(typeof zVisitorTrackingDisabled != "undefined"){
 			if(gotoToURLAfterEvent != ""){
 				setTimeout(function(){
@@ -7103,10 +7120,10 @@ var zHelpTooltip=new Object();
 				if(gotoToURLAfterEvent != ""){
 					if(eventLabel != ""){
 						console.log('track event 1:'+eventValue);
-						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
+						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {'hitCallback': function(){if(!newWindow && gotoToURLAfterEvent != ""){window.location.href = gotoToURLAfterEvent;}}});
 					}else{
 						console.log('track event 2:'+eventAction);
-						b('send', 'event', eventCategory, eventAction, {'hitCallback': function(){if(!newWindow){window.location.href = gotoToURLAfterEvent;}}});
+						b('send', 'event', eventCategory, eventAction, {'hitCallback': function(){if(!newWindow && gotoToURLAfterEvent != ""){window.location.href = gotoToURLAfterEvent;}}});
 					}
 				}else{
 					if(eventLabel != ""){
@@ -7145,7 +7162,7 @@ var zHelpTooltip=new Object();
 				}
 			}else{
 				if(zIsLoggedIn()){
-					if(!newWindow){
+					if(!newWindow && gotoToURLAfterEvent != ""){
 						window.location.href = gotoToURLAfterEvent;
 					}
 				}else{

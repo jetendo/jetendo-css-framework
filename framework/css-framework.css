@@ -14,6 +14,8 @@
 .z-border-white-2{border:2px solid #FFF; }
 .z-border-black-2{border:2px solid #000; }
 
+.z-show-on-dom-ready{visibility:hidden;}
+
 .z-bg-white{ background:#FFF;}
 .z-bg-white, .z-bg-white a:link, .z-bg-white a:visited{color:#000;}
 .z-bg-black{ background:#000;}
