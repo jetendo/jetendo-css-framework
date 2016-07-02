@@ -178,9 +178,10 @@ Grid Offset
 	
 	Offsets are disabled on mobile devices.  Below the 992 breakpoint, the offset class is reset back to the normal left margin of the grid column class.
 
-
 Sidebars 
 	The framework makes it easy to define sidebars without having to type exact pixel dimensions.  These classes are designed to automatically switch to responsive fluid 100% columns at 992 and below.   
+	
+	We found a problem with fluid images when using z-fill-width in internet explorer 9-11 which appears to be unfixable.  If you run into this problem, you will need to stop using z-fill-width.
 	
 	z-left-sidebar, z-right-sidebar and z-fill-width can be used to make sidebars quickly.
 	
