@@ -34,8 +34,8 @@ display:table-cell; padding:3px;
 display:table-cell; padding:3px;
 }
 .zGearButton:hover{ color:#666;}
- 
-
+.zSelectMultipleSelected{font-size:16px;}
+.zSelectMultipleSelectedLabel{font-size:14px;}
 
 
 
@@ -625,8 +625,17 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .zImageLeft{margin-right:10px; margin-bottom:10px; float:left; }
 .zImageDefault{ margin-bottom:10px; }
 .zImageRight{margin-left:10px; margin-bottom:10px; float:right; }
+
+#tinymce .zImageLeft{margin-right:10px !important; margin-bottom:10px !important; float:left !important; }
+#tinymce .zImageDefault{ margin-bottom:10px !important; }
+#tinymce .zImageRight{margin-left:10px !important; margin-bottom:10px !important; float:right !important; }
+#tinymce h1, #tinymce h2, #tinymce h3, #tinymce p, #tinymce ul, #tinymce ol{ padding-top:0px; padding-bottom:10px;}
+
+
 .zEditorHTML iframe{ max-width:100% !important;}
 .zEditorHTML img{ margin-right:10px; margin-left:10px; margin-bottom:10px; }
+.zEditorHTML table img{ margin:0px !important; }
+
 
 .zcontent-subpage-div{display:table; width:100%;margin-bottom:20px; }
 .zcontent-imagethumbwidth{ display:table-cell; max-width:100%; vertical-align:top; }
@@ -720,7 +729,8 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .zEventView1-print:link, .zEventView1-print:visited{display:block; float:left; padding:5px; text-decoration:none;border:1px solid #666; background-color:#999; color:#FFF; border-radius:5px;}
 .zEventView1-print:hover{background-color:#000;}
 .zEventView1-1{width:100px; display:table-cell;  font-weight:bold;}
-.zEventView1-2{ display:table-cell;  font-size:15px; line-height:19px;padding-top:16px;padding-bottom:16px; color:#000000; margin-left:37px;}
+.zEventView1-2{ display:table-cell;  font-size:15px; line-height:19px;padding-top:16px;padding-bottom:16px; margin-left:37px;}
+
 .zEventView1-3{width:100%; float:left; padding-bottom:20px;}
 .zEventView1-4{width:100%; display:table;  font-size:120%; font-weight:bold; line-height:normal;}
 .zEventView1-Map{width:100%; float:left; height:300px; display:none;}
@@ -799,7 +809,7 @@ hr{ background:none; border:none; border-bottom:1px solid #999; width:100%; marg
 .zRecurExcludedDay{width:100px; float:left; margin-right:5px; margin-bottom:5px; color:#000; padding:5px;background-color:#F6F6F6;border:1px solid #CCC; cursor:pointer; border-radius:5px; }
 .zRecurExcludedDay:hover{ background-color:#FFF;color:#000;}
 .zRecurExcludedDayDeleteButton{float:right;width:20px; border-radius:5px; text-align:center;background-color:#CCC; color:#000; margin-left:5px;}
-.zRecurCalendarDayExcluded{background-color:#900; color:#FFF;cursor:pointer;}
+.zRecurCalendarDayExcluded{background-color:#900 !important; color:#FFF !important;cursor:pointer;}
 .zRecurEventBox{width:100%; float:left;}
 
 .zEventWidget-circle-2 {color:#3a4746;font-size: 16px; width:100%; clear:both;text-align:center; float:left; display:block;

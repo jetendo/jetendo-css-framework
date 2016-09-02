@@ -454,6 +454,9 @@
 		}
 	}
 	zArrResizeFunctions.push({functionName:zForceChildEqualHeights });
+	setTimeout(function(){ 
+		zForceChildEqualHeights();
+	}, 100);
 
 	function setupMobileMenu() {
 		if($(".z-mobileMenuButton").length==0){
@@ -926,6 +929,7 @@ var zHumanMovement=false;
 
 	function zWindowOnResize(){
 		var windowSizeBackup=zWindowSize;
+
 		zGetClientWindowSize();
 		if(typeof windowSizeBackup === "function" && windowSizeBackup.width === zWindowSize.width && windowSizeBackup.height === zWindowSize.height){
 			return;	
@@ -958,15 +962,17 @@ var zHumanMovement=false;
 	}else{
 		var zMLSonResizeBackup=function(){};
 	}
-	$(window).bind("resize", function(ev){
-		zMLSonResizeBackup(ev);
-		return zWindowOnResize(ev);
+	zArrDeferredFunctions.push(function(){
+		$(window).bind("resize", function(ev){
+			zMLSonResizeBackup(ev);
+			return zWindowOnResize(ev);
 
-	});
-	$(window).bind("clientresize", function(ev){
-		zMLSonResizeBackup(ev);
-		return zWindowOnResize(ev);
+		});
+		$(window).bind("clientresize", function(ev){
+			zMLSonResizeBackup(ev);
+			return zWindowOnResize(ev);
 
+		});
 	});
 	function zLoadAllLoadFunctions(){
 		zFunctionLoadStarted=true;
@@ -990,6 +996,30 @@ var zHumanMovement=false;
 		}
 		zFunctionLoadStarted=false;
 		
+	}
+	function zGetClientWindowSize() {
+		var myWidth = 0, myHeight = 0;
+		if( typeof( window.innerWidth ) === 'number' ) {
+			//Non-IE
+			myWidth = window.innerWidth;
+			myHeight = window.innerHeight;
+		} else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+			//IE 6+ in 'standards compliant mode'
+			myWidth = document.documentElement.clientWidth;
+			myHeight = document.documentElement.clientHeight;
+		} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+			//IE 4 compatible
+			myWidth = document.body.clientWidth;
+			myHeight = document.body.clientHeight;
+		}
+		if(zScrollbarWidth===0){
+		zScrollbarWidth=zGetScrollBarWidth();	
+		}
+		zWindowSize={
+			"width":myWidth-zScrollbarWidth,
+					"height":myHeight
+		};
+		return zWindowSize;
 	}
 
 	function zWindowOnLoad(){
@@ -4001,7 +4031,8 @@ var zLoggedIn=false;
 					if(!showingIdleLogoutWarning){
 						showingIdleLogoutWarning=true;
 						var modalContent1='<h2>Idle Session Warning</h2><p>You will be logged out in <span id="zIdleWarningDiv1"></span> seconds.</p><p><strong><a href="##" id="zIdleWarningButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Continue session</a> <a href="##" id="zIdleLogoutButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Log Out</a></strong></p>';
-						zShowModal(modalContent1,{'width':370,'height':180, 'disableClose':true});
+						zShowModal(modalContent1,{'width':390,'height':200, 'disableClose':true});
+						
 						$("#zIdleLogoutButton").bind("click", function(e){
 							e.preventDefault();
 							window.location.replace('/z/user/home/index?zlogout=1');
@@ -4529,11 +4560,13 @@ var zLoggedIn=false;
 				} 
 				successCallback(marker); 
 			} else {
-				alert('Geocode was not successful for the following reason: ' + status);
+				console.log('Geocode was not successful for the following reason: ' + status);
+				$("#"+mapDivId).html("The location was not able to be mapped.");
 			}
 		});
 		return { map: map, marker: marker};
 	}
+	
 	function zCreateMapWithLatLng(mapDivId, latitude, longitude, optionsObj, successCallback, markerObj) {  
 		var mapOptions = {
 			zoom: 8,
@@ -5458,7 +5491,7 @@ function zLoadAddThisJs(){
 		} 
 		if(d1){
 			found=true;
-			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><a class="twitter-share-button" href="https://twitter.com/share">Tweet</a></div>';
+			d1.innerHTML='<div style="float:left; padding-right:5px;padding-bottom:5px;"><div class="g-plus" data-action="share" data-annotation="bubble"></div></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><iframe style="overflow: hidden; border: 0px none; width: 90px; height: 25px; " src="//www.facebook.com/plugins/like.php?href='+escape(window.location.href)+'&amp;layout=button_count&amp;show_faces=false&amp;width=90&amp;action=like&amp;font=arial&amp;layout=button_count"></iframe></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><a href="https://www.facebook.com/sharer/sharer.php?u='+escape(window.location.href)+'" target="_blank" title="Share on Facebook"><img src="/z/images/blog/facebook-share.png" width="54" height="20" alt="Share on Facebook" /></a></div><div style="float:left; padding-right:5px; padding-bottom:5px;"><script type="IN/Share" data-counter="right"></script></div><div style="float:left; padding-right:5px;padding-bottom:5px;"><a class="twitter-share-button" href="https://twitter.com/share">Tweet</a></div>';
 
 			d1.id="zaddthisbox"+i+"_loaded";
 			a1.push(d1);
@@ -8291,6 +8324,9 @@ var zVideoJsEmbedIndex=0;
 			}
 			try{
 				var currentDate=new Date(Date.parse(startDate));
+				if(currentDate< new Date()){ 
+					currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);  
+				}
 			}catch(e){
 				return;
 			}
@@ -8339,7 +8375,7 @@ var zVideoJsEmbedIndex=0;
 			var firstDayOfWeek=date.getDay();
 			var currentMonth=date.getMonth();
 			date.setDate(date.getDate()-firstDayOfWeek);
-			var day=date;
+			var day=date; 
 			for(var i=0;i<6;i++){
 				arrHTML.push('<div class="zRecurCalendarWeek">');
 				for(var n=0;n<7;n++){
@@ -8348,8 +8384,8 @@ var zVideoJsEmbedIndex=0;
 					if(dayMonth != currentMonth){
 						arrHTML.push('<div class="zRecurCalendarDayOtherMonth">'+currentDate+'</div>');
 					}else{
-						var markedCSS='';
-
+						var markedCSS=''; 
+						
 						if(typeof arrMarked[day.getTime()] != "undefined"){
 							markedCSS+=' zRecurCalendarDayMarked';
 							if(typeof arrExclude[day.getTime()] != "undefined"){
@@ -8656,6 +8692,9 @@ var zVideoJsEmbedIndex=0;
 			if(d!=""){
 				try{
 					endDate=new Date(Date.parse(d));
+					if(endDate< new Date()){
+						endDate=new Date();
+					}
 				}catch(e){
 					alert("Invalid end date");
 					endDate=new Date();
@@ -8708,8 +8747,12 @@ var zVideoJsEmbedIndex=0;
 			if(startDate == ""){
 				return arrDate;
 			}
-			try{
+			try{ 
 				var currentDate=new Date(Date.parse(startDate));
+				var originalCurrentDate=currentDate;
+				if(currentDate< new Date()){
+					currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1); 
+				}
 			}catch(e){
 				return arrDate;
 			}
@@ -8723,7 +8766,7 @@ var zVideoJsEmbedIndex=0;
 				var projectedDateCount=50000;
 				console.log("Project "+projectedDateCount+" days | startDate:"+startDate.toString());
 			}else{
-				var projectedDateCount=self.getProjectedDateCount(currentDate);
+				var projectedDateCount=self.getProjectedDateCount(originalCurrentDate);
 			}
 
 
@@ -8945,7 +8988,8 @@ var zVideoJsEmbedIndex=0;
 					break;
 				}
 			}
-
+			//console.log('projectedDateCount:'+projectedDateCount);
+			//console.log(arrDebugDate);
 			//console.log(arrDebugDate);
 			return arrDate;
 		}
@@ -11979,8 +12023,10 @@ function setMLSCount(c){
 	r92.style.display="block";
 	var theHTML='<span style="font-size:21px;line-height:26px;">'+c+'</span><br /><span style="font-size:12px;">matching listings';
 	//if(zSearchFormChanged && (typeof zDisableSearchFormSubmit === "undefined" || zDisableSearchFormSubmit === false)){
-		theHTML+='<br /><button onclick="document.zMLSSearchForm.submit();" class="zls-showResultsButton" style="font-size:13px; font-weight:normal; background-image:url(/z/a/listing/images/mlsbg1.jpg); background-repeat:repeat-x; background-color:none; border:1px solid #999; margin-top:7px; width:130px; padding:3px; text-decoration:none; cursor:pointer;" name="sfbut1">Show Results</button>';
+		theHTML+='<br /><button onclick="document.zMLSSearchForm.submit();" class="zls-showResultsButton" style="font-size:13px; font-weight:normal; background-image:url(/z/a/listing/images/mlsbg1.jpg); background-repeat:repeat-x; background-color:none; border:1px solid #999; margin-top:7px; box-sizing:border-box; width:100%; padding:3px; text-decoration:none; cursor:pointer;" name="sfbut1">Show Results</button>';
 	//}
+
+	
 	theHTML+='</span></span>';
 	if(r92!==null){
 		r92.innerHTML=theHTML;

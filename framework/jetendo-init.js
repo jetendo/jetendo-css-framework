@@ -18,7 +18,7 @@ var zMSIEVersion=-1;
 var zMSIEBrowser=window.navigator.userAgent.indexOf("MSIE"); 
 if(zMSIEBrowser != -1){	
 	zMSIEVersion= (window.navigator.userAgent.substring (zMSIEBrowser+5, window.navigator.userAgent.indexOf (".", zMSIEBrowser ))); 
-}
+} 
 
 var forcedUpgradeMessage=false; 
 if(!forcedUpgradeMessage){
@@ -28,10 +28,13 @@ if(!forcedUpgradeMessage){
 	if(navigator.userAgent.toLowerCase().indexOf("android 2.") != -1){
 		forcedUpgradeMessage=true;
 	}
-	if(forcedUpgradeMessage){
+	if(typeof zDisableUpgradeMessage == "undefined" && forcedUpgradeMessage){
 		var h=document.cookie.indexOf('hideBrowserUpgrade=');
 		if(h==-1){
 			zArrLoadFunctions.push(function(){
+				if(typeof zDisableUpgradeMessage != "undefined"){
+					return;
+				}
 				$('body').append('<div id="zBrowserUpgradeDiv" style="position:absolute; z-index:20000; background-color:#FFF !important; color:#000 !important; top:10px; right:10px; width:280px; padding:10px; font-size:18px; border:1px solid #999; line-height:24px; "><strong>This web site is not compatible with your browser.</strong> Please upgrade to access all features.<br /><a href="http://www.whatbrowser.org/" target="_blank">Learn More</a> | <a href="##" onclick="zHideBrowserUpgrade();">Hide Message</a></div>');
 			});
 		}
