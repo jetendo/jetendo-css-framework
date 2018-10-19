@@ -54,15 +54,17 @@
 	    return "";
 	}
 
-	function zDeleteCookie(key){
-		zSetCookie({key:key, value:"", futureSeconds:-1, enableSubdomains:false});
+	function zDeleteCookie(key,path){
+		var path = ( typeof path != 'undefined' ) ? path : '';
+
+		zSetCookie({key:key, value:"", path: path, futureSeconds:-1, enableSubdomains:false});
 	}
 	/* zSetCookie({key:"cookie",value:"value",futureSeconds:3600,enableSubdomains:false}); */
 	function zSetCookie(obj){
 		if(typeof obj !== "object"){
 			throw("zSetCookie requires an obj like {key:'cookie'',value:'value',futureSeconds:60,enableSubdomains:false}.");
 		}
-		var dObj={futureSeconds:0,enableSubdomains:false};
+		var dObj={futureSeconds:0,enableSubdomains:false,path:''};
 		for(var i in obj){
 			dObj[i]=obj[i];	
 		}
@@ -74,6 +76,9 @@
 		}
 		if(dObj.enableSubdomains){
 			newC+=";domain=."+window.location.hostname.replace("www.","").replace("secure.",""); 
+		}
+		if(dObj.path != '') {
+			newC+=";path="+dObj.path;
 		}
 		document.cookie=newC;
 	}
@@ -350,9 +355,10 @@
 	// if data-children-class is specified, the equal heights will be performed on the elements matching the class instead of the children of the container.
 	function forceChildEqualHeights(children){  
 		var lastHeight=0; 
-		$(children).height("auto");
+		$(children).css("height", "auto");
+
 		$(children).each(function(){  
-			var height=$(this).height(); 
+			var height=$(this).outerHeight(false); 
 			if(height>lastHeight){
 				lastHeight=height;
 			}
@@ -360,8 +366,13 @@
 		if(lastHeight == 0){
 			lastHeight="auto";
 		} 
-		$(children).height(lastHeight); 
+
+		$(children).css("height", lastHeight+"px");   
 	} 
+
+
+
+
 	function zForceChildEqualHeights(){  
 		var containers=$(".z-equal-heights");
 		// if data-column-count is not specified, then we force all children to have the same height
@@ -374,8 +385,11 @@
 			var singleColumnWidth=$(this).attr("data-single-column-width");
 			if(singleColumnWidth==null || singleColumnWidth == ""){
 				singleColumnWidth=479;
+			}else{
+				parseInt(singleColumnWidth);
 			}
 			var columnCount=$(this).attr("data-column-count");
+
 			if(columnCount==null || columnCount == ""){
 				columnCount=0;
 			}
@@ -385,69 +399,105 @@
 			}else{
 				var children=$(this).children();
 			} 
-			if($(this).width()<=singleColumnWidth){
-				$(children).height("auto");
-				return;
-			}
-			var columnChildren=[];
-			var columnChildrenImages=[];
-			if(columnCount==0){
-				columnChildren[0]={
-					children:children,
-					images:[],
-					imagesLoaded:0
+			
+			/*if(columnCount > 0 && typeof CSS !="undefined" && CSS.supports("display", "inline-grid")){
+				var arrAuto=[];
+				for(var i=0;i<columnCount;i++){
+					arrAuto.push("auto");
 				}
-				$("img", children).each(function(){
-					columnChildren[0].images.push(this);
-					if(this.complete){
-						columnChildren[0].imagesLoaded++;
-					}
+				if($(this).width()<=singleColumnWidth){
+					$(this).css({
+						"display":"inline-grid",
+						"grid-template-columns": "auto"
+					});
+				}else{
+					$(this).css({
+						"display":"inline-grid",
+						"grid-template-columns": arrAuto.join(" "),
+						"grid-column-gap": "20px",
+						"vertical-align":"top",
+						"grid-row-gap": "20px"
+					});
+					children.css({ "width":"100%"});
+					
+				}
+			}else{*/
+				if($(this).width()<=singleColumnWidth){
+					$(children).height("auto");
+					return;
+				}else{
+					$(children).css({
+						"display": "inline-block", 
+						"vertical-align": "top"
+					});
+					$(children).height("auto");
+				} 
+				/*
+				$(children).each(function(){
+					console.log($(this).height()+":"+$(this).outerHeight(false));
 				});
-			}else{
-				var count=0;
-				var currentOffset=0; 
-				for(var i=0;i<children.length;i++){
-					if(typeof columnChildren[currentOffset] == "undefined"){
-						columnChildren[currentOffset]={
-							children:[],
-							images:[],
-							imagesLoaded:0
-						} 
+				return;
+				*/
+				var columnChildren=[];
+				var columnChildrenImages=[];
+				if(columnCount==0){
+					columnChildren[0]={
+						children:children,
+						images:[],
+						imagesLoaded:0
 					}
-					columnChildren[currentOffset].children.push(children[i]);
-					$("img", children[i]).each(function(){
-						columnChildren[currentOffset].images.push(this);
+					$("img", children).each(function(){
+						columnChildren[0].images.push(this);
 						if(this.complete){
-							columnChildren[currentOffset].imagesLoaded++;
+							columnChildren[0].imagesLoaded++;
 						}
 					});
-					count++;
-					if(count>=columnCount){
-						count=0;
-						currentOffset++;
-					}
-				}  
-			} 
-			for(var i=0;i<columnChildren.length;i++){
-				var c=columnChildren[i]; 
-				if(c.images.length){  
-					var images=$(c.images); 
-					if(c.imagesLoaded != images.length){
-						images.bind("load", function(e){
-							c.imagesLoaded++;
-							if(c.imagesLoaded>=images.length){ 
-								setTimeout(function(){
-									forceChildEqualHeights(c.children);  
-								}, 10);
+				}else{
+					var count=0;
+					var currentOffset=0; 
+					for(var i=0;i<children.length;i++){
+						if(typeof columnChildren[currentOffset] == "undefined"){
+							columnChildren[currentOffset]={
+								children:[],
+								images:[],
+								imagesLoaded:0
+							} 
+						}
+						columnChildren[currentOffset].children.push(children[i]);
+						$("img", children[i]).each(function(){
+							columnChildren[currentOffset].images.push(this);
+							if(this.complete){
+								columnChildren[currentOffset].imagesLoaded++;
 							}
 						});
+						count++;
+						if(count>=columnCount){
+							count=0;
+							currentOffset++;
+						}
+					}  
+				} 
+				for(var i=0;i<columnChildren.length;i++){
+					var c=columnChildren[i]; 
+					if(c.images.length){  
+						var images=$(c.images); 
+						if(c.imagesLoaded != images.length){
+							images.bind("load", function(e){
+								c.imagesLoaded++;
+								if(c.imagesLoaded>=images.length){ 
+									setTimeout(function(){
+										forceChildEqualHeights(c.children);  
+									}, 10);
+								}
+							});
+						}
 					}
+					forceChildEqualHeights(c.children); 
+					setTimeout(function(){ 
+						forceChildEqualHeights(c.children);  
+					}, 10);
 				}
-				forceChildEqualHeights(c.children); 
-				setTimeout(function(){ 
-					forceChildEqualHeights(c.children);  
-				}, 10);
-			}
+			//}
 		}); 
 		if($(".z-equal-height").length > 0){
 			console.log("The class name should be z-equal-heights, not z-equal-height");
@@ -528,6 +578,42 @@
 	zArrDeferredFunctions.push(setupMobileMenu);
  
 	zArrDeferredFunctions.push(function(){
+		
+		function resizeRatioElements(){
+			var hasChanged=false;
+			$(".z-preserve-ratio").each(function(){
+				var width=$(this).width();
+				var ratio=$(this).attr("data-ratio");
+				if(ratio==null){
+					throw("data-ratio is missing on an element with z-preverve-ratio class.");
+				}
+				var arrRatio=ratio.split(":");
+				if(arrRatio.length != 2){
+					throw("data-ratio attribute format must be width:height with both numbers as integers, i.e. 4:3");
+				}
+				var ratioWidth=parseInt(arrRatio[0]);
+				var ratioHeight=parseInt(arrRatio[1]);
+				var height=Math.round((ratioHeight/ratioWidth)*width); 
+				//if(width < 600){
+					if($(this).height() != height){
+						$(this).height(height);
+						hasChanged=true;
+					}
+				//}
+			});
+			if(hasChanged){
+				zForceChildEqualHeights();
+			}
+
+
+		} 
+		zArrResizeFunctions.push({functionName:resizeRatioElements}); 
+		resizeRatioElements();
+		window.resizeRatioElements=resizeRatioElements;
+
+		setTimeout(function(){ 
+			resizeRatioElements();
+		},110); 
 
 		$(".z-show-on-dom-ready").each(function(){
 			$(this).removeClass("z-show-on-dom-ready");
@@ -700,16 +786,13 @@
 				curWidth=(curWidth/currentMenu.containerWidth);
 	 			newWidth=(Math.round(newWidth*100000)/1000)-0.001;
 	 			curWidth=(Math.round(curWidth*100000)/1000)-0.001; 
-				if(false && sLen-1 == i){
+				/*if(false && sLen-1 == i){
 					// this doesn't work
 
 					newWidth=(currentMenu.containerWidth-totalWidth2);
 		 			addWidth=newWidth;
 		 			newWidth=newWidth/currentMenu.containerWidth;
-		 			newWidth=(Math.round(newWidth*100000)/1000)-0.001;
-		 			if(newWidth<curWidth){
-		 			//	newWidth=curWidth;
-		 			}
+		 			newWidth=(Math.round(newWidth*100000)/1000)-0.001; 
 		 			curWidth=newWidth;
 
 
@@ -721,7 +804,7 @@
 						"width": (100)+"%",
 						"min-width":(100)+"%" 
 					});
-				}else{
+				}else{*/
 					$(currentMenu.arrItem[i]).parent().css({
 						"width": (newWidth)+"%",
 						"min-width":(curWidth)+"%", 
@@ -732,7 +815,7 @@
 						"min-width":(100)+"%" 
 					});
 						
-				}
+				//}
 				//console.log('newWidth:'+newWidth+" | curWidth:"+curWidth);
 				totalWidth2+=Math.round(addWidth+marginSize);
 				totalWidth3+=newWidth;
@@ -838,7 +921,7 @@ var zHumanMovement=false;
 				zArrMapFunctions[i]();
 			}
 		}
-	}
+	} 
 	function zSetScrollPosition(){
 		var ScrollTop = document.body.scrollTop;
 		if (ScrollTop === 0){
@@ -906,12 +989,14 @@ var zHumanMovement=false;
 		}
 		return r111;
 	} 
+
+	
 	if(typeof window.onscroll === "function"){
 		var zMLSonScrollBackup=window.onscroll;
 	}else{
 		var zMLSonScrollBackup=function(){};
 	}
-	$(window).bind("scroll", function(ev){
+	$(window).on("scroll", function(ev){
 		zMLSonScrollBackup(ev);
 		return zWindowOnScroll(ev);
 
@@ -921,10 +1006,9 @@ var zHumanMovement=false;
 	}else{
 		var zMLSonScrollBackup2=function(){};
 	} 
-	$(window).bind("mousewheel", function(ev){
+	$(window).on("mousewheel", function(ev){
 		zMLSonScrollBackup2(ev);
-		return zWindowOnScroll(ev);
-
+		return zWindowOnScroll(ev); 
 	});
 
 	function zWindowOnResize(){
@@ -1062,6 +1146,7 @@ var zHumanMovement=false;
 	window.zSetScrollPosition=zSetScrollPosition;
 	window.getWindowSize=getWindowSize;
 	window.zLoadAllLoadFunctions=zLoadAllLoadFunctions;
+	
 })(jQuery, window, document, "undefined"); 
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/flash-functions.js */
@@ -1191,6 +1276,9 @@ var zMotionHOC=new Array();
 var zMotionObjClicked="";
 var zFormOnEnterValues=new Array();
 var zInputBoxLinkValues=[];
+var zIsDirty=false;
+var zCurrentHash="";
+
 /*var zLastAjaxTableId="";
 var zLastAjaxURL="";
 var zLastAjaxVarName=""; */
@@ -1417,17 +1505,26 @@ var zLastAjaxVarName=""; */
 			url:'/z/misc/display-site-option-group/ajaxInsert'
 		}; 
 		zAjax(obj);
-	}
-	/*
+	} 
 	function zSetupAjaxTableSortAgain(){
-		if(zLastAjaxTableId !=""){
-			//zSetupAjaxTableSort(zLastAjaxTableId, zLastAjaxURL, zLastAjaxVarName);
+		for(var tableId in zAjaxCacheTableSort){
+			var c=zAjaxCacheTableSort[tableId];
+			zSetupAjaxTableSort(c.tableId, c.ajaxURL, c.ajaxVarName, c.ajaxVarNameOriginal, c.ajaxCallback);
 		}
-	}*/
+	}
+	var zAjaxCacheTableSort={};
 	function zSetupAjaxTableSort(tableId, ajaxURL, ajaxVarName, ajaxVarNameOriginal, ajaxCallback){
 		/*zLastAjaxTableId=tableId;
 		zLastAjaxURL=ajaxURL;
 		zLastAjaxVarName=ajaxVarName;*/
+
+		zAjaxCacheTableSort[tableId]={
+			tableId:tableId, 
+			ajaxURL:ajaxURL, 
+			ajaxVarName:ajaxVarName, 
+			ajaxVarNameOriginal:ajaxVarNameOriginal, 
+			ajaxCallback:ajaxCallback
+		};
 
 		var validated=true;
 		var arrError=[];
@@ -1450,15 +1547,18 @@ var zLastAjaxVarName=""; */
 		}
 		var arrSort=[];
 		$( '#'+tableId+' tbody tr' ).each(function(){
-			if(this.id == '' || ($("."+tableId+"_handle", this).length && $("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
+			if(this.id == ''){
 				validated=false;
 			}else{
 				if($("."+tableId+"_handle", this).length){
-					arrSort.push($("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id'));
+					var v=$("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id');
+					if(v != ""){
+						arrSort.push(v);
+					}
 				}
 			}
 		}); 
-		var originalSortOrderList=arrSort.join("|");
+		var originalSortOrderList=arrSort.join("|"); 
 		$("#"+tableId+" tbody").attr("data-original-sort", originalSortOrderList);
 		if(validated){
 			$('#'+tableId+' tbody' ).sortable({
@@ -1469,7 +1569,9 @@ var zLastAjaxVarName=""; */
 					var arrId2=[]; 
 					for(var i=0;i<arrId.length;i++){
 						var v=$("#"+arrId[i]+" ."+tableId+"_handle").attr("data-ztable-sort-primary-key-id"); 
-						arrId2.push(v); 
+						if(typeof v != "undefined" && v != ""){
+							arrId2.push(v); 
+						}
 					} 
 					var sortOrderList=arrId2.join("|");
 					//console.log("sorted list:"+sortOrderList);
@@ -1490,17 +1592,20 @@ var zLastAjaxVarName=""; */
 
 							arrSort=[];
 							$( '#'+tableId+' tbody tr' ).each(function(){
-								if(this.id == '' || ($("."+tableId+"_handle", this).length && $("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id') == '')){
+								if(this.id == ''){
 									validated=false;
 								}else{
-									arrSort.push($("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id'));
+									if($("."+tableId+"_handle", this).length){
+										var v=$("."+tableId+"_handle", this)[0].getAttribute('data-ztable-sort-primary-key-id');
+										if(v != ""){
+											arrSort.push(v);
+										}
+									}
 								}
 							}); 
 							originalSortOrderList=arrSort.join("|");
 							$("#"+tableId+" tbody").attr("data-original-sort", originalSortOrderList); 
-							ajaxCallback(tempObj); 
-
-							
+							ajaxCallback(tempObj);  
 						}
 					};
 					tempObj.errorCallback=function(){
@@ -1526,9 +1631,10 @@ var zLastAjaxVarName=""; */
 		var opt;
 		var hasValue=false;
 		
-		if(options.length >=2){
-			if(options[0].value != "" || options[1].value != ""){
+		for (var i=0, iLen=options.length; i<iLen; i++) {
+			if(options[i].value != ""){
 				hasValue=true;
+				break;
 			}
 		}
 		for (var i=0, iLen=options.length; i<iLen; i++) {
@@ -1718,13 +1824,30 @@ var zLastAjaxVarName=""; */
 			}
 		}
 	}
+	function zResetManagerTabEdit(){ 
+		$(".tabWaitButton").hide();
+		$(".tabSaveButton").show();
+	}
 
 	/*
 	var tempObj={};
-	tempObj.id="zMapListing";
+	// variables can be posted with tempObj.formId or with tempObj.postObj, but not both.  
+	// tempObj.formId is recommended because it supports ajax file uploads.
+	tempObj.formId="zManagerEditForm";
+	// tempObj.postObj={}; // deprecated legacy method of posting specific variables.
+	tempObj.id="zManagerEditForm";
 	tempObj.url="/urlInQuotes.html";
-	tempObj.callback=functionNameNoQuotes;
-	tempObj.errorCallback=functionNameNoQuotes;
+	tempObj.callback=function(r){
+		var r=JSON.parse(r);
+		if(r.success){
+			// use the data
+		}else{
+			alert(r.errorMessage);
+		}
+	};
+	tempObj.errorCallback=function(){
+		// alert("Sorry, there was a problem with your submission, please try again later.");
+	};
 	tempObj.cache=false; // set to true to disable ajax request when already downloaded same URL
 	tempObj.ignoreOldRequests=true; // causes only the most recent request to have its callback function called.
 	zAjax(tempObj);
@@ -1742,12 +1865,17 @@ var zLastAjaxVarName=""; */
 			zAjaxData[obj.id].requestEndCount=0;
 			zAjaxData[obj.id].cacheData=[];
 		}
-		if(typeof obj.postObj === "undefined"){
-			obj.postObj={};	
+		if(typeof obj.formId != "undefined" && typeof obj.postObj != "undefined"){
+			alert("Only obj.formId should be used, obj.postObj is deprecated.");
 		}
-		var postData="";
-		for(var i in obj.postObj){
-			postData+=i+"="+encodeURIComponent(obj.postObj[i])+"&";
+		if(typeof obj.formId == "undefined"){
+			if(typeof obj.postObj === "undefined"){
+				obj.postObj={};	
+			}
+			var postData="";
+			for(var i in obj.postObj){
+				postData+=i+"="+encodeURIComponent(obj.postObj[i])+"&";
+			}
 		}
 		if(typeof obj.cache==="undefined"){
 			obj.cache=false;	
@@ -1779,6 +1907,26 @@ var zLastAjaxVarName=""; */
 		if(zAjaxData[obj.id].cache && zAjaxData[obj.id].cacheData[obj.url] && zAjaxData[obj.id].cacheData[obj.url].success){
 			zAjaxData[obj.id].callback(zAjaxData[obj.id].cacheData[obj.url].responseText);
 		}
+		req.showRequestError=function(m){ 
+			if(zIsDeveloper() || zIsTestServer()){
+				alert("Unexpected response.  See console for request and response objects.  Click ok to view response."); 
+				console.log("zAjax Request Object");
+				console.log(zAjaxData[obj.id]); 
+				console.log("zAjax Response Object");
+				console.log(req); 
+				zShowModal(req.responseText,{'width':zWindowSize.width-100,'height':zWindowSize.height-100});
+				zResetManagerTabEdit();
+				return false;
+			}else{
+				if(m!= ""){
+					alert(m);
+				}
+				return true;
+			}
+		}
+		req.onerror = function(e){ 
+			req.showRequestError("Sorry, but that server request failed to load right now, please refresh your browser or come back later.");
+		}
 		req.onreadystatechange = function(){  
 			if(req.readyState === 4 || req.readyState === "complete" || (zMSIEBrowser!==-1 && zMSIEVersion<=7 && this.readyState==="loaded")){
 				var id=req.getResponseHeader("x_ajax_id");
@@ -1787,26 +1935,34 @@ var zLastAjaxVarName=""; */
 				}
 				if(req.status!==200 && req.status!==301 && req.status!==302){
 					if(id===null || id===""){
+						if(zIsDeveloper() || zIsTestServer()){
+							alert("You must return a x_ajax_id header with a value that matches the x_ajax_id that was sent with the request.");
+						}
 						if(zAjaxLastRequestId !== false){
-							id=zAjaxLastRequestId;
-							zAjaxData[id].errorCallback(req);
+							id=zAjaxLastRequestId; 
+							var continueExecution=req.showRequestError();
+							if(continueExecution){
+								zAjaxData[id].errorCallback(req);
+							}
 						}else{
-							alert("Sorry, but that page failed to load right now, please refresh your browser or come back later.");
-						//document.write(req.responseText);
+							req.showRequestError("Sorry, but that request response failed to load right now, please refresh your browser or come back later.");
 						}
 					}else{
 						if(zAjaxData[id].debug){
-							document.write('AJAX SERVER ERROR - (Click back and refresh to continue):<br />'+req.responseText);
-						}else{
-							zAjaxData[id].errorCallback(req);
+							req.showRequestError(""); 
+						}else{ 
+							var continueExecution=req.showRequestError("");
+							if(continueExecution){
+								zAjaxData[id].errorCallback(req);
+							}
 						}
 					}
 					//return;
 				}else if(id===null || id===""){
 					if(!zIsDeveloper()){
-						alert("Invalid response.  You may need to login again or refresh the page.");
+						req.showRequestError("Invalid response.  You may need to login again or refresh the page.");
 					}else{
-						alert("zAjax() Error: The following ajax URL MUST output the x_ajax_id as an http header.\n"+zAjaxData[obj.id].url);	
+						req.showRequestError("");  
 					}
 					return;
 				}
@@ -1834,7 +1990,10 @@ var zLastAjaxVarName=""; */
 			} 
 		};
 		var randomNumber = Math.random()*1000;
-		var derrUrl="&zFPE=1";
+		var derrUrl="";
+		if(!zIsDeveloper() && !zIsTestServer()){
+			derrUrl="&zFPE=1";
+		}
 		if(zAjaxData[obj.id].debug){
 			derrUrl="";
 		}
@@ -1849,20 +2008,149 @@ var zLastAjaxVarName=""; */
 			action+='&'+derrUrl+'&ztmp='+randomNumber;
 		}
 		action+="&x_ajax_id="+escape(obj.id);
-		if(zAjaxData[obj.id].method.toLowerCase() === "get"){
-			req.open(zAjaxData[obj.id].method,action,true);
-			//req.setRequestHeader("Accept-Encoding","gzip,deflate;q=0.5");
-			//req.setRequestHeader("TE","gzip,deflate;q=0.5");
-			req.send("");  
-		}else if(zAjaxData[obj.id].method.toLowerCase() === "post"){
-			//alert('not implemented - use zForm() instead');
-			req.open(zAjaxData[obj.id].method,action,true);
-			req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-			req.send(postData);  
+		var isMacSafari=false;
+		if(navigator.userAgent.indexOf("Safari") != -1 && (navigator.userAgent.indexOf("Mac OS") != -1)){
+			isMacSafari=true;
+			var fileFieldCache={};
+		}  
+		if(typeof window.FormData != "undefined" && typeof obj.formId != "undefined"){
+			var form = document.getElementById(obj.formId);
+			if(isMacSafari){
+				var offset1=0;
+				$('input[type="file"]', $("#"+obj.formId)).each(function(){
+					if(this.files.length == 0){
+						fileFieldCache[offset1]={parent:$(this).parent(), element:$(this).detach()};
+						offset1++; 
+					}
+				});
+			}
+
+			var formData = new FormData(form);
+
+			var postObjTemp=zGetFormDataByFormId(obj.formId);
+			for(var i in postObjTemp){
+				if(postObjTemp[i] == ""){
+					formData.append(i, ""); 
+				}
+			} 
+
+			req.open(zAjaxData[obj.id].method, action, true); 
+			req.send(formData);
+			setTimeout(function(){
+				if(isMacSafari){
+					for(var id in fileFieldCache){
+						fileFieldCache[id].parent.append(fileFieldCache[id].element);
+					} 
+				} 
+			}, 500);
+
+		}else{ 
+			if(zAjaxData[obj.id].method.toLowerCase() === "get"){
+				req.open(zAjaxData[obj.id].method,action,true);
+				//req.setRequestHeader("Accept-Encoding","gzip,deflate;q=0.5");
+				//req.setRequestHeader("TE","gzip,deflate;q=0.5");
+				req.send("");  
+			}else if(zAjaxData[obj.id].method.toLowerCase() === "post"){
+				//alert('not implemented - use zForm() instead');
+				req.open(zAjaxData[obj.id].method,action,true);
+				req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+				if(typeof obj.formId != "undefined"){
+					var postObj=zGetFormDataByFormId(obj.formId);
+					var postData="";
+					for(var i in postObj){
+						postData+=i+"="+encodeURIComponent(postObj[i])+"&";
+					}
+				}
+				req.send(postData);  
+			}
+		}
+	}
+ 
+
+
+	function zEmailValidate(e){ 
+  		var filter = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		if (filter.test(e)) {
+			return true;
+		}else{
+			return false;
 		}
 	}
 
+
+	// makes it easier to fill out forms on a touchscreen device.
+	function setupTouchFriendlyInputs(){ 
+		if(!zIsTouchscreen()){
+			return;
+		}
+		var selector=".zEnableMobileInputOKButton input, .zEnableMobileInputOKButton select, .zEnableMobileInputOKButton textarea";
+		var $inputs=$(selector);
+
+		function resizeMobileInput(){
+			if(typeof currentInput == "boolean"){
+				return;
+			}
+			setOKPosition(currentInput);
+		}
+		function setOKPosition(obj){ 
+			var position=zGetAbsPosition(obj);  
+
+			var leftPosition=position.x+position.width+2;
+			if(zWindowSize.width-55 < leftPosition){
+				leftPosition=zWindowSize.width-55;
+			}
+			$okButton.css({
+				"left":(leftPosition)+"px",
+				"top":(position.y)+"px",
+				"display":"block"
+			});
+		}
+
+
+		
+		if($inputs.length){
+			if($(".zMobileInputOKButton").length=='0'){
+				$("body").append('<a href="#" class="zMobileInputOKButton">OK</a>');
+			}
+			var $okButton=$(".zMobileInputOKButton");
+			$okButton.on("click", function(e){
+				$(".zMobileInputOKButton").hide();
+				currentInput=false;
+			});
+			$(document).on("keyup", selector, function(e){ 
+			    if(e.which==13){
+			    	e.preventDefault();
+			    	e.stopImmediatePropagation();
+			    	$(this).trigger("blur");
+			    }
+			});
+			var currentInput=false;
+			zArrResizeFunctions.push({functionName:resizeMobileInput});
+			$(document).on("focus", selector, function(e){ 
+				var target=this; 
+				if(target.type == "radio" || target.type=="checkbox" || target.type=="select-multiple" || target.type=="select" || target.type=="select-one"){
+					return;
+				} 
+				var position=zGetAbsPosition(target); 
+				setOKPosition(target);
+				currentInput=target;
+
+				// TODO: get next input to focus on, and trigger focus
+				// $('input[tabindex=7]')
+				// var tabIndex=$(target).attr("tabindex"); 
+				// $element=...
+				// $element.trigger("focus");
+
+			});
+			$(document).on("blur", selector, function(e){
+				$(".zMobileInputOKButton").hide();
+				currentInput=false;
+			});
+		} 
+	}
+	zArrDeferredFunctions.push(setupTouchFriendlyInputs);
 	
 	function zFormSubmit(formName,validationOnly,onChange,debug, returnObject){	
 		// validation for all fields...
@@ -2472,7 +2760,7 @@ var zLastAjaxVarName=""; */
 		return;
 	}
 
-	function zCLink(d){d.href='javascript:void(0);';}
+	function zCLink(d){d.href='#';}
 	function zSetInput(id,v){
 		var d=document.getElementById(id);d.value=v;
 		if(d.onchange!==null){
@@ -2699,8 +2987,29 @@ var zLastAjaxVarName=""; */
 		return max;
 	}
 	var zRowBeingEdited=false;
+	var zBodyBeingEdited=false;
+	var zBodyInsertPosition="bottom";
 	var zRowEditIndex=0;
-	var zCurrentHash="";
+	function zTableRecordAdd(obj, id, position){
+		// store table body 
+		if(typeof position == "undefined"){
+			position="bottom";
+		}
+		zBodyInsertPosition=position;
+		try{
+			zShowModalStandard(obj.href, 2000,2000, true, true);
+			zCurrentHash="#zAddTableRecord"+new Date().getTime()+"-"+Math.random();
+			window.location.href=zCurrentHash;
+			zBodyBeingEdited=window.parent.$("#"+id+" tbody");  
+			if(zBodyBeingEdited.length==0){
+				//alert('Invalid table html structure, tbody missing.');
+				zBodyBeingEdited=false;
+			} 
+		}catch(e){
+			console.log('error in zTableRecordAdd');
+			console.log(e);
+		}
+	}
 	function zTableRecordEdit(obj){
 		zShowModalStandard(obj.href, 2000,2000, true, true);
 		zRowEditIndex++;
@@ -2720,19 +3029,24 @@ var zLastAjaxVarName=""; */
 		}
 		zRowBeingEdited=obj;
 	}
+	function zAddTableRecordRow(id, html){  
+		if(typeof zBodyBeingEdited == "boolean"){
+			window.location.reload();
+			return;
+		} 
+		var s='<tr id="newSortRowTable_row'+id+'" data-ztable-sort-primary-key-id="'+id+'">'+html+'</tr>';
+		if(zBodyInsertPosition == "bottom"){
+			zBodyBeingEdited.append(s); 
+		}else{
+			zBodyBeingEdited.prepend(s); 
+		}
+		zBodyBeingEdited=false;
+		zSetupAjaxTableSortAgain();
+	}
 	function zReplaceTableRecordRow(html){
 		$(zRowBeingEdited).html(html); 
+		zRowBeingEdited=false;
 	}
-	zArrDeferredFunctions.push(function(){
-		$(window).bind("hashchange", function() {
-
-			if (window.location.hash.indexOf(zCurrentHash) == -1){
-				zCloseModal();
-			}else{
-
-			}
-		});
-	});
 	function zDeleteTableRecordRow(obj, deleteLink){
 		var tr, table;
 		var i=0;
@@ -2768,6 +3082,7 @@ var zLastAjaxVarName=""; */
 					r=eval('('+r+')');
 					if(r.success){
 						$(tr).html('<td class="zDeletedRow" colspan="'+cellCount+'">Row Deleted</td>');
+						zSetupAjaxTableSortAgain();
 					}else{
 						alert('Failed to delete the record. Error: '+r.errorMessage);
 					}
@@ -2783,8 +3098,321 @@ var zLastAjaxVarName=""; */
 		return false;
 		
 	}
+ 
+
+	(function(){
+		// prevent losing work when navigating away from a page, except when submitting a form.
+		var ignoreDirtyCheck=false;
+		var formDataCache={};  
+		var unloadCalled=false;
+		var formDirtyTempCache={};
+		function zIsFormDirty(id){ 
+			var form=document.getElementById(id);
+			zCheckFormDataForChangesByObj(form);
+			if(typeof formDirtyTempCache[id] != "undefined"){
+				delete formDirtyTempCache[id]; 
+				return true;
+			}else{
+				return false;
+			}
+		}
+		function zCheckFormDataForChangesByObj(obj){ 
+			if(obj.id == "" || typeof formDataCache[obj.id] == "undefined"){
+				return true;
+			}
+			var cachedData=formDataCache[obj.id];
+			var newData=zGetFormDataByFormId(obj.id);
+			var changed=false;
+			for(var i in cachedData){
+				if(typeof newData[i]== "undefined"){
+					changed=true;
+					break;
+				}else if(newData[i] != cachedData[i]){
+					changed=true;
+					break;
+				}
+			}
+			for(var i in newData){
+				if(typeof cachedData[i]== "undefined"){
+					changed=true;
+					break;
+				}
+			} 
+			if(changed){
+				formDirtyTempCache[obj.id]=true;
+				formDataCache[obj.id]=newData;
+				zSetDirty(true);
+			}
+			return true; 
+		}
+		function zCheckFormDataForChanges(){ 
+			$(".zFormCheckDirty").each(function(e){
+				return zCheckFormDataForChangesByObj(this);
+			});
+		} 
+		$(window).bind("hashchange", function() {
+
+			if (window.location.hash.indexOf(zCurrentHash) == -1){ 
+				var iframe=document.getElementById(window.zCurrentModalIframeId);
+				if(iframe){
+					iframe.contentWindow.zCheckFormDataForChanges(); 
+					if(!iframe.contentWindow.zIsDirty || zConfirmCloseModal()){
+						zCloseModal();
+					}else{
+						window.location.href+=zCurrentHash;
+					}
+				}
+			}else{
+
+			}
+		});
+		$(window).bind("beforeunload", function(e){
+			zCheckFormDataForChanges(); 
+			if(!zIsDirty || ignoreDirtyCheck){
+				return;
+			}  
+			if(unloadCalled){
+				return;
+			}
+			if(e.target && e.target.activeElement && e.target.activeElement.href && e.target.activeElement.href.indexOf("mailto:") != -1){
+				return;
+			}
+			unloadCalled=true;
+			setTimeout(function(){
+				unloadCalled=false;
+			}, 10);
+			e.preventDefault();
+		    return false;
+		});
+
+		zArrDeferredFunctions.push(function(){
+			var formIndex=1;
+			$(".zFormCheckDirty").each(function(){
+				if(this.id == ""){
+					this.id="zFormUniqueId"+formIndex;
+					formIndex++;
+				}
+				formDataCache[this.id]=zGetFormDataByFormId(this.id);
+			});
+			$(".zFormCheckDirty").bind("submit",function(e){
+				if(typeof formDirtyTempCache[this.id] != "undefined"){
+					delete formDirtyTempCache[this.id];
+				}
+				formDataCache[this.id]={};
+				ignoreDirtyCheck=true;
+			});
+		});
+
+		
+
+		function zConfirmCloseModal(){
+			var r=window.confirm("Do you want to leave this page?\n\nChanges you made may not be saved.");
+			if(r){ 
+				return true;
+			}
+			return false;
+		}
+		function zSetDirty(value){ 
+			if(value){
+				zIsDirty=value; 
+			}else{ 
+				zIsDirty=value;
+			}
+		}
+		window.zCheckFormDataForChanges=zCheckFormDataForChanges;
+		window.zConfirmCloseModal=zConfirmCloseModal; 
+		window.zSetDirty=zSetDirty;
+		window.zIsFormDirty=zIsFormDirty;
+	})();  
+
+
+
+
+	function zSubmitManagerEditForm(obj, customCallback){
+		if(typeof tinyMCE != "undefined"){
+			tinyMCE.triggerSave();
+		}
+		var tempObj={};
+		tempObj.formId=obj.id;
+		var form=document.getElementById(tempObj.formId);
+		tempObj.id=obj.id;
+		tempObj.url=form.action;
+		tempObj.method="POST";
+		tempObj.callback=function(r){ 
+			var r=JSON.parse(r);
+			if(r.success){
+				if(typeof customCallback != "undefined"){
+					customCallback(r);
+					return;
+				}
+				//alert(r.reload + " " + r.redirect)
+				if(typeof r.reload != "undefined" && r.reload){
+					window.parent.location.reload();
+				}else if(typeof r.redirect != "undefined" && r.redirect){
+					window.parent.location.href=r.redirectLink;
+				}else{
+					if(r.newRecord){ 
+						window.parent.zAddTableRecordRow(r.id, r.rowHTML);
+					}else{
+						window.parent.zReplaceTableRecordRow(r.rowHTML);
+					}
+					window.parent.zCloseModal();
+				}
+			}else{
+				zResetManagerTabEdit();
+				$(".z-manager-edit-errors").html(r.errorMessage);
+				window.scrollTo(0,0);
+			}
+		};
+		tempObj.errorCallback=function(resp){
+			$(".z-manager-edit-errors").html('<div style="background-color:#900; color:#FFF; padding:10px; float:left; width:100%;">Sorry, there was a problem with your submission, please try again later.</div>');
+			zResetManagerTabEdit();
+			window.scrollTo(0,0);
+		};
+		tempObj.cache=false; // set to true to disable ajax request when already downloaded same URL
+		tempObj.ignoreOldRequests=true; // causes only the most recent request to have its callback function called.
+		zAjax(tempObj);
+
+		return false;
+	}
+ 
+	window.htmlEntities = {
+		encode : function(str) {
+			var buf = [];
+			
+			for (var i=str.length-1;i>=0;i--) {
+				buf.unshift(['&#', str[i].charCodeAt(), ';'].join(''));
+			}
+			
+			return buf.join('');
+		},
+		decode : function(str) {
+			return str.replace(/&#(\d+);/g, function(match, dec) {
+				return String.fromCharCode(dec);
+			});
+		}
+	}; 
+
+	zArrDeferredFunctions.push(function(){
+		$(document).on("click", ".zMapPickerButton", function(e){
+			e.preventDefault();
+			var field=$(this).attr("data-map-field");
+			var address=zMapPickerGetAddress(this); 
+			var c=$('#'+this.id).val(); 
+			address=zStringReplaceAll(address, '-- Select --', ''); 
+			address=zStringReplaceAll(address, ', , ', ', '); 
+			zShowModalStandard('/z/misc/map/modalMarkerPicker?field='+encodeURIComponent(field)+'&coordinates='+c+'&address='+encodeURIComponent(address), 4000,4000, 10);
+		});
+	});
+	function zMapPickerGetAddress(obj){
+		var address=document.getElementById($(obj).attr("data-map-address"));
+		var city=document.getElementById($(obj).attr("data-map-city"));
+		var state=document.getElementById($(obj).attr("data-map-state"));
+		var zip=document.getElementById($(obj).attr("data-map-zip"));
+		var country=document.getElementById($(obj).attr("data-map-country"));
+		
+		var arrField=[address, city, state, zip, country];
+		var arrAddress=[];
+		for(var i=0;i<arrField.length;i++){
+			var d=arrField[i];
+			var v="";
+			if(d != null && typeof d != "undefined"){
+				if(d.type == "select-one"){
+					if(d.options[d.selectedIndex].text !=""){
+						v=d.options[d.selectedIndex].text;
+					}
+				}else if(d.type == "text"){
+					v=d.value;
+				}
+			}
+			if(v != ""){
+				if(arrAddress.length){
+					arrAddress.push(", "+v);
+				}else{
+					arrAddress.push(v);
+				}
+			}
+		}
+		return arrAddress.join(" ");
+		
+	}
+
+
+	var zEmailTokenInput={};
+	zEmailTokenInput.setupTokenizeInput=function(field){ 
+		var $field=$('#'+field);
+		$field.keypress(function(e) { 
+			// detect ENTER key 
+			if (e.keyCode == 13) { 
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				return false;
+			}
+		});
+		$field.attr( 'multiple', 'multiple' );
+		$field.tokenize2( {
+			dataSource: 'select',
+			searchFromStart: false,
+			tokensAllowCustom: true
+		} );
+		$field.on("tokenize:tokens:add", function(e, token){
+			zEmailTokenInput.preventInvalidToken(this, e, token, field); 
+		}); 
+		$(document).on("keyup paste", "#"+field+"_container .token-search input", function(){ 
+			zEmailTokenInput.forceSetEmail(this, "#"+field, false);
+		}); 
+		$(document).on("blur", "#"+field+"_container .token-search input", function(){  
+			zEmailTokenInput.forceSetEmail(this, "#"+field, true);
+		}); 
+	}
+	zEmailTokenInput.preventInvalidToken=function(obj, e, token, field){
+		var arrToken=token.split("`");
+		var email=arrToken.pop().trim();
+		if(!zEmailValidate(email)){ 
+			$(obj).trigger('tokenize:tokens:remove', [token]);    
+			// add it back as text to avoid frustration
+			$("#"+field+"_container .token-search input").val(token);
+			var h="";
+			// tracking whether to append or not
+			if(obj.lastActionCount!=obj.currentActionCount){
+				h=$("#"+field+"_error").html();
+			} 
+			obj.lastActionCount++;
+			if(h !=""){
+				h+=", ";
+			} 
+			h+='"'+token+'" is not a valid email address';
+			$("#"+field+"_error").show().html(h);
+		}
+	}
+
+	zEmailTokenInput.forceSetEmail=function(obj, f, triggerAdd){
+		var fieldElement=$(f)[0];
+		if(typeof fieldElement.lastActionCount == "undefined"){
+			fieldElement.lastActionCount=0;
+			fieldElement.currentActionCount=0;
+		}
+		fieldElement.lastActionCount++;
+		fieldElement.currentActionCount=fieldElement.lastActionCount; 
+		if(obj.value != ""){
+			/*if(!zEmailValidate(obj.value.trim())){
+				$(f+"_error").show().html('"'+obj.value+'", is not a valid email address.');
+				return false;
+			}*/
+			//$(f+"_error").hide();
+			if(triggerAdd){
+				$(f).trigger('tokenize:tokens:add', [obj.value, obj.value, true]);
+				obj.value="";
+			}
+		}
+		return true;
+	} 
+	window.zEmailTokenInput=zEmailTokenInput;  
+	window.zSubmitManagerEditForm=zSubmitManagerEditForm;
 	window.zCalculateTableCells=zCalculateTableCells;
 	window.zTableRecordEdit=zTableRecordEdit;
+	window.zTableRecordAdd=zTableRecordAdd;
+	window.zAddTableRecordRow=zAddTableRecordRow;
 	window.zReplaceTableRecordRow=zReplaceTableRecordRow;
 	window.zDeleteTableRecordRow=zDeleteTableRecordRow;
 	window.zUpdateImageLibraryCount=zUpdateImageLibraryCount;
@@ -2835,7 +3463,9 @@ var zLastAjaxVarName=""; */
 	window.zOS_mode_status_off=zOS_mode_status_off;
 	window.zOS_mode_hide=zOS_mode_hide;
 	window.zOS_mode_show=zOS_mode_show;
-	//window.zSetupAjaxTableSortAgain=zSetupAjaxTableSortAgain;
+	window.zEmailValidate=zEmailValidate;
+	window.zResetManagerTabEdit=zResetManagerTabEdit;
+	window.zSetupAjaxTableSortAgain=zSetupAjaxTableSortAgain;
 
 })(jQuery, window, document, "undefined"); 
 
@@ -3294,19 +3924,7 @@ if(typeof zLocalDomains === "undefined"){
 			}
 		}
 	};
-
-
-	function zTrackPageview(link){
-		if(typeof window['GoogleAnalyticsObject'] != "undefined"){
-			var b=eval(window['GoogleAnalyticsObject']); 
-			b('send', 'pageview', link);
-		}else if(typeof _gaq !== "undefined"){
-			_gaq.push(['_trackPageview', link]);
-		}else if(typeof pageTracker !== "undefined"){
-			pageTracker._trackPageview(link);
-		} 
-	}
-	window.zTrackPageview=zTrackPageview;
+ 
 			
 })(jQuery, window, document, "undefined"); 
 
@@ -3842,7 +4460,8 @@ var zGalleryReloadTimeoutId=0;
 				}
 			});
 	}
-	function zSlideshowInit(){
+
+	function zSlideshowInit(){  
 		for(var i=0;i<zArrSlideshowIds.length;i++){
 			$('.zslideshowslides_container'+zArrSlideshowIds[i].id).css("display","block");
 			var c=zArrSlideshowIds[i];
@@ -3878,11 +4497,18 @@ var zGalleryReloadTimeoutId=0;
 					c.slideDelay=4000;
 					zArrSlideshowIds[i].slideDelay=4000;
 				}
+				// console.log('iasadas here');
+				// return;
+				
+
 				$('#zUniqueSlideshowLargeId'+c.id).cycle({
 					before: zImageLazyLoadUpdate,
 					fx: 'fade',
-					timeout: c.slideDelay
+					timeout:c.slideDelay,
+					slides:'> a',
+					speed:300
 				});
+
 			}
 			if(c.layout === 1 || c.layout===0){
 				var d=c.slideDelay;
@@ -3911,6 +4537,9 @@ var zGalleryReloadTimeoutId=0;
 				}
 		}
 	}
+	zArrDeferredFunctions.push(function(){
+		zSlideshowInit();
+	});
 	function zSlideshowClickLink(u){
 		if(window.location.href.indexOf('/z/misc/slideshow/embed') !== -1){
 			top.location.href=u;
@@ -4012,6 +4641,9 @@ var zLoggedIn=false;
 	var showingIdleLogoutWarning=false;
 
 	function zIsLoggedIn(){
+		if(typeof window.zGetCookie == "undefined"){
+			return false;
+		}
 		var loggedIn=zGetCookie("ZLOGGEDIN");
 		var d=zGetCookie("ZSESSIONEXPIREDATE");
 		if(loggedIn === "1" && d !== ""){
@@ -4028,31 +4660,49 @@ var zLoggedIn=false;
 				
 				var secondsBeforeLogout=130;
 				if(n-newDate-30<=secondsBeforeLogout*1000){ 
-					if(!showingIdleLogoutWarning){
-						showingIdleLogoutWarning=true;
-						var modalContent1='<h2>Idle Session Warning</h2><p>You will be logged out in <span id="zIdleWarningDiv1"></span> seconds.</p><p><strong><a href="##" id="zIdleWarningButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Continue session</a> <a href="##" id="zIdleLogoutButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Log Out</a></strong></p>';
-						zShowModal(modalContent1,{'width':390,'height':200, 'disableClose':true});
-						
-						$("#zIdleLogoutButton").bind("click", function(e){
-							e.preventDefault();
-							window.location.replace('/z/user/home/index?zlogout=1');
-						});
-						$("#zIdleWarningButton").bind("click", function(e){
-							e.preventDefault();
+					if(typeof zTokenLogin != "undefined" && zTokenLogin){
+						// session lasts forever
+						var obj={
+							id:"zContinueSession",
+							method:"get",
+							callback:function(r){
+								console.log('Session extended automatically');
+							},
+							errorCallback:function(){ 
+								console.log('Failed to extend session automatically'); 
+							},
+							url:"/z/user/home/extendSession"
+						}; 
+						zAjax(obj);
+					}else{
+						if(!showingIdleLogoutWarning){
+							showingIdleLogoutWarning=true;
+							var modalContent1='<h2>Idle Session Warning</h2><p>You will be logged out in <span id="zIdleWarningDiv1"></span> seconds.</p><p><strong><a href="##" id="zIdleWarningButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Continue session</a> <a href="##" id="zIdleLogoutButton" style="border-radius:5px; padding:5px; padding-left:10px; padding-right:10px; text-decoration:none; background-color:#666; color:#FFF;">Log Out</a></strong></p>';
+							zShowModal(modalContent1,{'width':390,'height':200, 'disableClose':true});
+							
+							$("#zIdleLogoutButton").bind("click", function(e){
+								e.preventDefault();
+								window.location.replace('/z/user/home/index?zlogout=1');
+							});
+							$("#zIdleWarningButton").bind("click", function(e){
+								e.preventDefault();
 
-							var obj={
-								id:"zContinueSession",
-								method:"get",
-								callback:function(r){
-									console.log('Session extended');
-								},
-								errorCallback:function(){ alert('Unknown error occurred'); },
-								url:"/z/user/home/extendSession"
-							}; 
-							zAjax(obj);
-							showingIdleLogoutWarning=false;
-							zCloseModal();
-						});
+								var obj={
+									id:"zContinueSession",
+									method:"get",
+									callback:function(r){
+										console.log('Session extended'); 
+										showingIdleLogoutWarning=false;
+										zCloseModal();
+									},
+									errorCallback:function(){ alert('Unknown error occurred'); },
+									url:"/z/user/home/extendSession"
+								}; 
+								zAjax(obj);
+								showingIdleLogoutWarning=false;
+								zCloseModal();
+							});
+						}
 					}
 					$("#zIdleWarningDiv1").html(Math.round((n-newDate)/1000));
 				}else{
@@ -4399,6 +5049,9 @@ var zLoggedIn=false;
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/map-functions.js */
 
+var zArrGeolocationCallback=[];
+var zArrGeolocationWatchCallback=[];  
+
 (function($, window, document, undefined){
 	"use strict";
 
@@ -4464,7 +5117,12 @@ var zLoggedIn=false;
 		}else if(arrMarker.length === 1){
 			if(arrMarker[0].getPosition().lat() !== 0){
 				mapObj.setCenter(arrMarker[0].getPosition());
-				mapObj.setZoom(10);
+				// Use the zoom level from 'mapObj' if provided.
+				if ( typeof( mapObj.zoom ) !== 'undefined' ) {
+					mapObj.setZoom( mapObj.zoom );
+				} else {
+					mapObj.setZoom( 10 );
+				}
 			}
 			return;
 		}
@@ -4495,6 +5153,7 @@ var zLoggedIn=false;
 		if(typeof delayMilliseconds === 'undefined'){
 			delayMilliseconds=0;
 		}
+
 		setTimeout(function(){
 			geocoder.geocode( { 'address': address}, function(results, status) {
 				if (status === google.maps.GeocoderStatus.OK) { 
@@ -4592,6 +5251,657 @@ var zLoggedIn=false;
 		return { map: map, marker: marker};
 	}
 
+
+
+
+	var stopCacheGeocoding=false;
+	var zGeocode={
+		arrAddress:[],
+		arrKey:[]
+	};
+	var firstRun=true;
+	var geocodeOffset=0;
+	var geocoderAvailable=false; 
+	var geocoder = false;
+	function zIsGeocoderAvailable(){ 
+		if(typeof google!=="undefined" && typeof google.maps!=="undefined" && typeof google.maps.Geocoder!=="undefined"){
+			if(typeof geocoder == "boolean"){
+				geocoder = new google.maps.Geocoder();   
+			}
+			geocoderAvailable=true;
+		}
+
+		if(!geocoderAvailable){
+			return false;
+		}
+		if(firstRun){
+			var active=zGetCookie("zGeocodeActive");
+			if(active == "1"){
+				// another browser window is already running the geocoder for this ip - lets avoid hitting limits and cancel this request.
+				stopCacheGeocoding=true;
+				return false;
+			}
+			firstRun=false;
+			zSetCookie({key:"zGeocodeActive",value:"1",futureSeconds:40,enableSubdomains:false});  
+		}
+		var count=zGetCookie("zGeocodeCount");
+		if(count==""){
+			count=0;
+		}else{
+			count=parseInt(count);
+		}
+		// limit to 300 geocodes per client per day
+		if(count > 300){
+			return false;
+		}
+		count++;
+		zSetCookie({key:"zGeocodeCount",value:count,futureSeconds:60 * 60 * 24,enableSubdomains:false});  
+		return true;
+	}
+	function zGeocodeCacheAddress() {
+		if(!zIsGeocoderAvailable()){
+			if(zIsDeveloper()){
+				console.log('Geocoder available');
+			}
+			return;
+		} 
+		if(zGeocode.arrAddress.length <= geocodeOffset){
+			if(zIsDeveloper()){
+				console.log('Nothing available to geocode');
+			}
+			return; 
+		}
+ 
+		if(zIsDeveloper()){
+			console.log('geocoding address: '+zGeocode.arrAddress[geocodeOffset]);
+		}
+		geocoder.geocode( { 'address': zGeocode.arrAddress[geocodeOffset]}, function(results, status) {
+			var r="";
+			var data={
+				latitude:"",
+				longitude:"",
+				accuracy:"",
+				status:""
+			};
+			if(zIsDeveloper()){
+				console.log(results);
+			}
+			var match=false;
+			if (status == google.maps.GeocoderStatus.OK) {
+				var a1=new Array();
+				for(var i=0;i<results.length;i++){
+					//var a2=new Array();
+					//a2[0]=results[i].types.join(",");
+					if(results[i].geometry.location_type=="ROOFTOP"){//"street_address"){  
+						data.status="OK";
+						data.latitude=results[i].geometry.location.lat();
+						data.longitude=results[i].geometry.location.lng();
+						data.accuracy=results[i].geometry.location_type; 
+						match=true;
+						break;	
+					}else if(data.accuracy==''){
+
+						data.status="OK";
+						data.latitude="";
+						data.longitude="";
+						data.accuracy=results[i].geometry.location_type; 
+					}
+				}
+				//if(debugajaxgeocoder) f1.value+="Result:"+r+"\n";
+			} else if(status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT || status == google.maps.GeocoderStatus.REQUEST_DENIED){
+				// serious error condition
+				stopCacheGeocoding=true; 
+			}
+			var curStatus="";
+			if(status == google.maps.GeocoderStatus.OK){
+				curStatus="OK";
+			}else if(status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+				curStatus="OVER_QUERY_LIMIT";
+				stopGeocoding=true;
+				return;
+			}else if(status == google.maps.GeocoderStatus.REQUEST_DENIED){
+				curStatus="REQUEST_DENIED";
+			}else if(status == google.maps.GeocoderStatus.ZERO_RESULTS){
+				curStatus="ZERO_RESULTS";
+			}else if(status == google.maps.GeocoderStatus.INVALID_REQUEST){
+				curStatus="INVALID_REQUEST";
+			}else if(status == 'ERROR'){
+				stopCacheGeocoding=true;
+				// This is an undocumented problem with google's API. We must stop geocoding and wait for a new user with a fresh copy of google's API downloaded that hopefully works.
+				return;
+			}else{
+				curStatus=status;
+			}
+			data.status=curStatus;
+			if(zIsDeveloper()){
+				console.log('before saveGeocode status: '+curStatus);
+			}
+			//if(debugajaxgeocoder) f1.value+='geocode done for address='+zGeocode.arrAddress[geocodeOffset]+" with status="+curStatus+"\n";
+			var debugurlstring="";
+			/*if(debugajaxgeocoder){
+				debugurlstring="&debugajaxgeocoder=1";
+			}*/
+			data.address=zGeocode.arrAddress[geocodeOffset];
+			data.key=zGeocode.arrKey[geocodeOffset]; 
+			var ts={};
+			ts.id="zSaveGeocode";
+			ts.postObj=data;
+			ts.cache=false;
+			ts.method="post";
+			ts.url="/z/misc/geocode/saveGeocode";
+			ts.callback=function(r){
+				var r=JSON.parse(r);
+				if(r.success){
+					if(zIsDeveloper()){
+						console.log('saveGeocode '+geocodeOffset+' status: true');
+					}
+				}else{
+					console.log('saveGeocode error:'+r.errorMessage);
+				}
+			}
+			zAjax(ts);  
+			geocodeOffset++;
+			if(geocodeOffset<zGeocode.arrAddress.length && !stopCacheGeocoding){
+				setTimeout(function(){ 
+					zTimeoutGeocodeCache();
+				},1500);
+			}
+		});
+	}
+
+	// zGetDirectionsDistance(sourceLat, sourceLong, destinationLat, destinationLong, directionsCallbackFunction);
+	function zGetDirectionsDistanceByLatLng(sourceLat, sourceLong, destinationLat, destinationLong, directionsCallbackFunction){
+		var source=new google.maps.LatLng(sourceLat, sourceLong);
+		var destination=new google.maps.LatLng(destinationLat, destinationLong);
+		zGetDirectionsDistanceByAddress(source, destination, directionsCallbackFunction)
+	}
+
+	// zGetDirectionsDistance(source, destination, directionsCallbackFunction);
+	function zGetDirectionsDistanceByAddress(source, destination, directionsCallbackFunction){
+
+		var directionsService = new google.maps.DirectionsService();
+		var request = {
+			origin:source,
+			destination:destination,
+			travelMode: google.maps.DirectionsTravelMode.DRIVING
+		};
+
+		directionsService.route(request, function(response, status){
+			if (status == google.maps.DirectionsStatus.OK){
+				if(zIsTestServer() || zIsDeveloper()) console.log(response); 
+				/*
+				distance = "The distance between the two points on the chosen route is: "+response.routes[0].legs[0].distance.text;
+				distance += "The aproximative driving time is: "+response.routes[0].legs[0].duration.text;
+				console.log(distance);
+				*/  
+				var rs={
+					success:true,
+					response:response,
+					distanceInMeters: response.routes[0].legs[0].distance.value, 
+					distanceInKilometers: response.routes[0].legs[0].distance.value/1000, 
+					distanceInMiles: response.routes[0].legs[0].distance.value*0.000621371, // convert meters to miles
+					distanceAsString: response.routes[0].legs[0].distance.text, 
+					drivingTime: response.routes[0].legs[0].duration.text
+				};
+			}else{
+				var rs={
+					success:false,
+					response:response,
+					errorMessage:'Unable to calculate driving distance'
+				};
+			}
+			directionsCallbackFunction(rs); 
+		});
+	}
+	// zDisplayDirectionsDistance(googleMapObj, directionsResponse);
+	function zDisplayDirectionsDistance(googleMapObj, directionsResponse){
+
+		var directionsDisplay = new google.maps.DirectionsRenderer({
+			suppressMarkers: true,
+			suppressInfoWindows: true
+		});
+		directionsDisplay.setMap(googleMapObj);
+		directionsDisplay.setDirections(directionsResponse);
+	}
+
+	var arrRegisterAutoCompleteCallback=[];
+	function zGoogleAddressAutoCompleteRegisterCallback(f){
+		arrRegisterAutoCompleteCallback.push(f);
+	}
+
+	zArrMapFunctions.push(function(){ 
+		if($(".zGoogleAddressAutoComplete").length){
+
+		}
+	    $(".zGoogleAddressAutoComplete").each(function(){
+			var placeSearch, autocomplete;
+
+			// Bias the autocomplete object to the user's geographical location,
+			// as supplied by the browser's 'navigator.geolocation' object.
+			var disableGeolocate=$(this).attr("data-disable-geolocate");
+			if(disableGeolocate == null || disableGeolocate == "0"){
+				disableGeolocate=false;
+			}else{
+				disableGeolocate=true;
+			}
+			function geolocate() {
+				// only works on https in a browser that supports geolocation
+				if (window.location.href.indexOf("https:") != -1 && navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						var geolocation = {
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+						};
+						var circle = new google.maps.Circle({
+							center: geolocation,
+							radius: position.coords.accuracy
+						});
+						autocomplete.setBounds(circle.getBounds());
+					});
+				}else{
+					// do nothing
+				}
+			}
+
+
+			var componentForm = {
+				coordinates: $(this).attr("data-address-coordinates"),
+				street_number: $(this).attr("data-address-number"),
+				route: $(this).attr("data-address-street"),
+				locality: $(this).attr("data-address-city"),
+				administrative_area_level_1: $(this).attr("data-address-state"),
+				country: $(this).attr("data-address-country"),
+				postal_code: $(this).attr("data-address-zip")
+			}; 
+	 		var backupAutocompleteInputValue="";
+		    $(this).bind("focus", function(){
+		    	backupAutocompleteInputValue=this.value;
+				$(this).select();
+				if(!disableGeolocate){
+			    	geolocate();
+			    }
+		    });
+			function clearAddressFields() {  
+				for (var component in componentForm) {
+					if (typeof componentForm[component] != "undefined") {
+						document.getElementById(componentForm[component]).value = '';
+						document.getElementById(componentForm[component]).disabled = false;
+					}
+				}
+			}
+			function fillInAddressFields(place, fieldName) { 
+				if(typeof place.geometry == "undefined"){
+					return false;
+				}
+				clearAddressFields();
+
+				if (typeof componentForm["coordinates"] != "undefined"){
+					document.getElementById(componentForm["coordinates"]).value=place.geometry.location.lat()+","+place.geometry.location.lng();
+				}
+
+
+				// Get each component of the address from the place details
+				// and fill the corresponding field on the form.
+				for (var i = 0; i < place.address_components.length; i++) {
+					var addressType = place.address_components[i].types[0];
+					if (typeof componentForm[addressType] != "undefined" && componentForm[addressType]) { 
+						var val = place.address_components[i].short_name;
+						document.getElementById(componentForm[addressType]).value = val;  
+					}
+				}
+				if(zIsTestServer() || zIsDeveloper()) console.log('fillInAddressFields');
+				if(zIsTestServer() || zIsDeveloper()) console.log(place);
+				var a=buildAddress(place, fieldName); 
+				// ensure the callback is after dom changes are done.  I think it is the place_changed event we are waiting for.
+			 
+				for(var i=0;i<arrRegisterAutoCompleteCallback.length;i++){
+					arrRegisterAutoCompleteCallback[i](a);
+				} 
+				return true;
+			}
+
+			function buildAddress(place, fieldName) { 
+				var a = {
+					coordinates: "",
+					street_number: "", 
+					street: "", // route
+					city: "", // locality
+					state: "", // administrative_area_level_1
+					country: "",
+					postal_code: "",
+					address:"",
+					fieldName:fieldName
+				};
+				a.coordinates=place.geometry.location.lat()+","+place.geometry.location.lng();
+
+				for (var i = 0; i < place.address_components.length; i++) {
+					var addressType = place.address_components[i].types[0];
+					var val = place.address_components[i].long_name;
+					if(addressType == "street_number"){
+						a.street_number=val;
+					}else if(addressType == "route"){
+						a.street=val;
+					}else if(addressType == "locality"){
+						a.city=val;
+					}else if(addressType == "administrative_area_level_1"){
+						a.state=val;
+					}else if(addressType == "country"){
+						a.country=val;
+					}else if(addressType == "postal_code"){
+						a.postal_code=val; 
+					}
+					// administrative_area_level_2 is county
+				}
+				var arrAddress=[];
+				a.address=place.formatted_address;
+				/*
+				if(a.street_number != ""){
+					arrAddress.push(a.street_number+" ");
+				}
+				if(a.street != ""){
+					arrAddress.push(a.street+", ");
+				}
+				if(a.city != ""){
+					arrAddress.push(a.city+", ");
+				}
+				if(a.state != ""){
+					arrAddress.push(a.state+" ");
+				}
+				if(a.postal_code != ""){
+					arrAddress.push(a.postal_code+" ");
+				}
+				if(a.country != ""){
+					arrAddress.push(a.country);
+				}
+				console.log(arrAddress);
+				//a.address=arrAddress.join("");
+				*/
+				return a;
+			}
+
+			
+
+ 
+ 			var userSelectedGooglePlace=false;
+			function fillInAddress() { 
+				// Get the place details from the autocomplete object.
+				if(zIsTestServer() || zIsDeveloper()) console.log('fillInAddress called: place_changed event');
+				userSelectedGooglePlace=true;
+				setTimeout(function(){
+					userSelectedGooglePlace=false;
+				}, 2000);
+				var place = autocomplete.getPlace(); 
+				fillInAddressFields(place, this.__fieldElement.name);
+			}
+			// Create the autocomplete object, restricting the search to geographical
+			// location types.
+
+			var options={
+				types: ['geocode'] // geocode, (regions) or (cities)
+			}; 
+
+			var restrict=false;
+			var ts={};
+			/*
+			// restrictions don't work with type=geocode, only larger areas.  Restriction may still be useful someday if we need use to type only city/zip/state instead.  i.e. (regions) or (cities)
+			// up to 5 countries
+			*/
+			// data-autocomplete-type="(cities)" data-country-limit="us,mx" data-state-limit="fl,ga" data-city-limit="Ormond Beach,Daytona Beach" data-zip-limit="32174,32176,32114"
+			
+			var type=$(this).attr("data-autocomplete-type");
+			if(type != null && type !=""){
+				if(type == 'regions'){
+					type='(regions)';
+				}
+				if(type == 'cities'){
+					type='(cities)';
+				}
+				if(type == 'postal_code'){
+					type='(postal_code)';
+				}
+				if(type != '(cities)' && type != '(postal_code)' && type != '(regions)' && type != 'geocode'){
+					throw("Invalid autocomplete type.  Please specify geocode, (cities), (regions) in data-autocomplete-type"); 
+				}
+				options.types=[type];
+				if(type == "(regions)" || type == "(cities)"){
+					var countryLimit=$(this).attr("data-country-limit");
+					var stateLimit=$(this).attr("data-state-limit");
+					var cityLimit=$(this).attr("data-city-limit");
+					var postalCodeLimit=$(this).attr("data-zip-limit");
+					if(countryLimit != null && countryLimit != ""){
+						restrict=true;
+						ts.country=countryLimit.toLowerCase().split(",");
+					}
+					if(stateLimit != null && stateLimit != ""){
+						restrict=true;
+		    			ts.administrativeArea=stateLimit.toLowerCase().split(",");
+					}
+					if(cityLimit != null && cityLimit != ""){
+						restrict=true;
+		    			ts.locality=cityLimit.toLowerCase().split(","); 
+					}
+					if(postalCodeLimit != null && postalCodeLimit != ""){
+						restrict=true;	
+		    			ts.postalCode=postalCodeLimit.toLowerCase().split(","); 
+					}
+					if(restrict){
+						options.componentRestrictions=ts;
+					}
+				}
+			}
+
+			autocomplete = new google.maps.places.Autocomplete(this, options); 
+			autocomplete.__fieldElement=this;  
+ 
+			$(this).bind("blur", function(){ 
+				var currentValue=$.trim(this.value);
+				var self2=this;
+				// must wait to verify if user selected a google autocomplete place
+				setTimeout(function(){
+					// need to be able to register to autocomplete callback functions.
+					if(userSelectedGooglePlace){
+						if(zIsTestServer() || zIsDeveloper()) console.log('blur autocomplete geocode: google place picked');
+						userSelectedGooglePlace=false;
+					}else{
+						if(zIsTestServer() || zIsDeveloper()) console.log('blur autocomplete geocode: geocode will execute');
+						// if the value changed, clear the address fields until callback completes
+						if(backupAutocompleteInputValue != currentValue){
+							clearAddressFields();
+						} 
+						// only run geocode if user didn't select a google address
+						var v=document.getElementById(componentForm["coordinates"]).value;  
+						if(v=='' && currentValue!=""){
+ 
+							// geocode and set form
+							var geocoder = new google.maps.Geocoder();  
+							geocoder.geocode( {  
+								'address': currentValue
+							}, function(results, status) {
+								if (status === google.maps.GeocoderStatus.OK) { 
+									var place=results[0]; 
+									clearAddressFields();  
+									if(zIsTestServer() || zIsDeveloper()) console.log('Geocoded address:'+currentValue); 
+									if(type != '(postal_code)'){
+										self2.value=place.formatted_address;
+									}
+
+									fillInAddressFields(place, autocomplete.__fieldElement.name); 
+								} else {
+									alert("Google can't map this address, please correct or remove the address and try again. (Status: "+status+")");
+								}
+							});   
+						}
+					}
+				}, 500);
+			});
+			// When the user selects an address from the dropdown, populate the address
+			// fields in the form.
+			autocomplete.addListener('place_changed', fillInAddress);
+
+		});
+	});
+
+	function zTimeoutGeocodeCache(){
+		if(stopCacheGeocoding) return;
+		zGeocodeCacheAddress();
+	}
+
+
+
+	// lat/long distance functions 
+	function zGetDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+		var R = 6371; // Radius of the earth in km
+		var dLat = zDeg2Rad(lat2-lat1);  // deg2rad below
+		var dLon = zDeg2Rad(lon2-lon1); 
+		var a = 
+		Math.sin(dLat/2) * Math.sin(dLat/2) +
+		Math.cos(zDeg2Rad(lat1)) * Math.cos(zDeg2Rad(lat2)) * 
+		Math.sin(dLon/2) * Math.sin(dLon/2)
+		; 
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		var d = R * c; // Distance in km
+		return d;
+	}
+	function zGetDistanceFromLatLonInMiles(lat1,lon1,lat2,lon2) {
+		var km=zGetDistanceFromLatLonInKm(lat1,lon1,lat2,lon2);
+		return zKmToMiles(km);
+	}
+	function zKmToMiles(km){
+		return km*1.609;
+	}
+	function zMilesToKm(miles){
+		return miles*0.621;
+	} 
+	function zDeg2Rad(deg) {
+		return deg * (Math.PI/180);
+	}
+	function zSortLocationsByDistance(latitude, longitude, arrLocation){ 
+		var arrDistance=[];
+		if(arrLocation.length==0){
+			return [];
+		}
+		for(var i=0;i<arrLocation.length;i++){
+			var latitude2=parseFloat(arrLocation[i].latitude);
+			var longitude2=parseFloat(arrLocation[i].longitude); 
+			var distanceInMiles=zGetDistanceFromLatLonInMiles(latitude,longitude,latitude2,longitude2); 
+			arrDistance.push({distanceInMiles: distanceInMiles, location:arrLocation[i] });
+		}
+		arrDistance.sort(function(a, b){
+		    if(a.distanceInMiles < b.distanceInMiles) return -1;
+		    if(a.distanceInMiles > b.distanceInMiles) return 1;
+		    return 0;
+		});
+		return arrDistance;
+	}
+
+	// geolocation functions
+	zArrDeferredFunctions.push(function (){
+		var userLocation=zGetCookie("ZSTOREDUSERLOCATION");
+		if(userLocation!=""){
+			var arrLocation=userLocation.split(",");
+			if(arrLocation.length==3){
+				zSetCurrentUserLocation(arrLocation[0], arrLocation[1], arrLocation[2]);
+			}else if(arrLocation.length==2){
+				zSetCurrentUserLocation(arrLocation[0], arrLocation[1]);
+			}
+		}
+		setTimeout(function(){
+			if(zArrGeolocationCallback.length || zArrGeolocationWatchCallback.length){
+				zExecuteGeoLocationLookup();
+			}
+		}, 10);
+	});
+	function zGetGeoLocationWithCallback(callback, errorCallback){
+		if(typeof navigator.geolocation=="undefined"){
+			if(typeof errorCallback != "undefined"){
+				errorCallback();
+			}
+		}
+		navigator.geolocation.getCurrentPosition(function(location) {  
+			zSetCurrentUserLocation(location.coords.latitude, location.coords.longitude, 'device'); 
+	 		callback();
+		},
+		function (error) {  
+			if(typeof errorCallback != "undefined"){
+				errorCallback({success:false, error:error});
+			}
+		}, { enableHighAccuracy :true}); 
+	}  
+
+	function zSetCurrentUserLocation(latitude, longitude, type){
+		window.zStoredUserLocation={
+			latitude:latitude,
+			longitude:longitude,
+			type:type
+		};
+		var location=latitude+","+longitude+","+type;
+		zSetCookie({key:"ZSTOREDUSERLOCATION", value:location, futureSeconds:60*60*24*365,enableSubdomains:false});  
+	}
+	function zGetCurrentUserLocation(){
+		if(typeof window.zStoredUserLocation == "undefined"){
+			return {success:false};
+		}else{ 
+			return {success:true, latitude:window.zStoredUserLocation.latitude, longitude:window.zStoredUserLocation.longitude, type:window.zStoredUserLocation.type};
+		}
+	}
+
+	function zExecuteGeoLocationLookup(){
+		if(typeof navigator.geolocation=="undefined"){
+			return;
+		}
+		var userLocation=zGetCurrentUserLocation();
+		if(userLocation.success && userLocation.type == 'device'){
+	 		for(var i=0;i<zArrGeolocationWatchCallback.length;i++){
+	 			zArrGeolocationWatchCallback[i]();
+	 		}
+	 		for(var i=0;i<zArrGeolocationCallback.length;i++){
+	 			zArrGeolocationCallback[i]();
+	 		} 
+	 		return;
+
+		}else{
+			if(zArrGeolocationWatchCallback.length){
+				navigator.geolocation.watchPosition(function(location) {
+					// this allows realtime position information to come back to the site.  
+
+					zSetCurrentUserLocation(location.coords.latitude, location.coords.longitude, 'device');  
+			 		for(var i=0;i<zArrGeolocationWatchCallback.length;i++){
+			 			zArrGeolocationWatchCallback[i]();
+			 		}
+				}, function(error){
+					console.log('navigator.geolocation.watchPosition failed');
+					console.log(error);
+
+				}, { enableHighAccuracy :true}); 
+			}
+			if(zArrGeolocationCallback.length){
+				navigator.geolocation.getCurrentPosition(function(location) { 
+					console.log('navigator.geolocation.getCurrentPosition success'); 
+					console.log(location);
+
+					zSetCurrentUserLocation(location.coords.latitude, location.coords.longitude, 'device'); 
+			 		for(var i=0;i<zArrGeolocationCallback.length;i++){
+			 			zArrGeolocationCallback[i]();
+			 		}
+				}, function(error){
+					console.log('navigator.geolocation.getCurrentPosition failed');
+					console.log(error);
+
+				}, { enableHighAccuracy :true}); 
+			}
+		}
+	}
+
+
+	window.zSetCurrentUserLocation=zSetCurrentUserLocation;
+	window.zGetCurrentUserLocation=zGetCurrentUserLocation;
+	window.zGetGeoLocationWithCallback=zGetGeoLocationWithCallback; 
+	window.zSortLocationsByDistance=zSortLocationsByDistance;
+
+	window.zGoogleAddressAutoCompleteRegisterCallback=zGoogleAddressAutoCompleteRegisterCallback;
+	window.zGeocode=zGeocode;
+	window.zIsGeocoderAvailable=zIsGeocoderAvailable;
+	window.zGeocodeCacheAddress=zGeocodeCacheAddress;
 	window.zCreateMap=zCreateMap;
 	window.zCreateMapMarker=zCreateMapMarker;
 	window.zMapFitMarkers=zMapFitMarkers;
@@ -4600,6 +5910,9 @@ var zLoggedIn=false;
 	window.zAddMapMarkerByAddress=zAddMapMarkerByAddress;
 	window.zCreateMapWithAddress=zCreateMapWithAddress;
 	window.zCreateMapWithLatLng=zCreateMapWithLatLng;
+	window.zDisplayDirectionsDistance=zDisplayDirectionsDistance;
+	window.zGetDirectionsDistanceByLatLng=zGetDirectionsDistanceByLatLng;
+	window.zGetDirectionsDistanceByAddress=zGetDirectionsDistanceByAddress;
 })(jQuery, window, document, "undefined"); 
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/menu-functions.js */
@@ -4674,7 +5987,7 @@ var arrOriginalMenuButtonWidth=[];
 		}
 	}
 	zArrDeferredFunctions.push(function(){
-		$(document.body).bind('touchstart', function (event) {
+		document.body.addEventListener('touchstart', function (event) {
 			zTouchPosition.x=[];
 			zTouchPosition.y=[];
 			if(typeof event.targetTouches === "undefined"){
@@ -4685,8 +5998,10 @@ var arrOriginalMenuButtonWidth=[];
 				zTouchPosition.x.push(event.targetTouches[i].pageX);
 				zTouchPosition.y.push(event.targetTouches[i].pageY);
 			}
+		}, {
+			passive:true 
 		});
-		$(document.body).bind('touchmove', function (event) {
+		document.body.addEventListener('touchmove', function (event) {
 			zTouchPosition.curX=[];
 			zTouchPosition.curY=[];
 			if(typeof event.targetTouches === "undefined"){
@@ -4696,8 +6011,10 @@ var arrOriginalMenuButtonWidth=[];
 				zTouchPosition.curX.push(event.targetTouches[i].pageX);
 				zTouchPosition.curY.push(event.targetTouches[i].pageY);
 			} 
+		}, {
+			passive:true 
 		});  
-		$(document.body).bind('touchend', function (event) {
+		document.body.addEventListener('touchend', function (event) {
 			zTouchPosition.x=[];
 			zTouchPosition.y=[];
 			zTouchPosition.curX=[];
@@ -4712,10 +6029,14 @@ var arrOriginalMenuButtonWidth=[];
 				zTouchPosition.x.push(event.targetTouches[i].pageX);
 				zTouchPosition.y.push(event.targetTouches[i].pageY);
 			}
+		}, {
+			passive:true 
 		}); 
 		
 		
 	});
+
+	
 	function zMenuInit(){ // modified version of v1.1.0.2 by PVII-www.projectseven.com 
 		//if(zMSIEBrowser==-1){return;}
 		//return;
@@ -5054,6 +6375,44 @@ if (typeof window.console === "undefined") {
         log: function(obj){ }
     };  
 }
+
+zArrDeferredFunctions.push(function(){
+	$(".zGetWeather").each(function(){
+		var $self=$(this);
+		var showHTML=$(this).attr("data-show-html");
+		if(showHTML=="1"){
+			showHTML=true;
+		}else{
+			showHTML=false;
+		}
+		var ts={
+			id:"zGetWeather",
+			method:"post",
+			postObj:{
+				zip:$(this).attr("data-zip"),
+				currentOnly:$(this).attr("data-currentonly"),
+				overrideStyles:$(this).attr("data-override-styles"),
+				forecastLink:$(this).attr("data-forecast-link")
+			},
+			url:"/z/misc/weather/index",
+			callback:function(r){
+				var r=JSON.parse(r);
+				if(r.success){ 
+					if(showHTML){
+						$self.html(r.html);
+					}else{
+						$self.html(r.data.temperature+"&deg;");
+					}
+				}else{ 
+					$self.html("");
+				}
+			},
+			cache:false
+		};  
+		zAjax(ts); 
+	});
+});
+
 
 if (typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function () {
@@ -5509,6 +6868,7 @@ zArrLoadFunctions.push({functionName:zLoadAddThisJsDeferred});
  
 function zeeo(m,n,o,w,l,r,h,b,v,z,z2){
 	var k='ai',g='lto',f='m',e=':';
+	var cr3="";
 	if(z){return o+n+w+m;}else{ if(l){var cr3=('<a href="'+f+k+g+e+o+n+w+m+'">');
 	if(b+h+v+r!==''){cr3+=(b+h+v+r);}else{cr3+=(o+n+w+m);} cr3+=('<\/a>');
 	}else{
@@ -5516,6 +6876,8 @@ function zeeo(m,n,o,w,l,r,h,b,v,z,z2){
 		if(d){d.innerHTML=cr3;}
 	}
 }
+
+
 	
 
 
@@ -5554,15 +6916,33 @@ function zCheckIfPageAlreadyLoadedOnce(){
 	once.value='';
 }
 
-
-
+function formatPhoneNumberForURI(p){
+	p=p.replace(/[^0-9]/g, "");
+	return p;
+}
+ 
 zArrDeferredFunctions.push(function(){
 	if(zIsTouchscreen()){
-		 $(".zPhoneLink").each(function(){
-			this.href="tel:"+this.innerText;
-		 });
+		$(document).on('touchstart', ".zPhoneLink", function() {
+		    this.documentClick = true;
+		});
+		$(document).on('touchmove', ".zPhoneLink", function() {
+		    this.documentClick = false;
+		});
+		$(document).on('click touchend', ".zPhoneLink", function(e) {
+			e.preventDefault();
+		    if (e.type == "click") this.documentClick = true;
+		    if (typeof this.documentClick != "undefined" && this.documentClick){
+				var p=formatPhoneNumberForURI(this.innerText);
+				if(p != ""){ 
+					window.location.href="tel:"+p;
+				}
+		    }
+		});  
 	}
 });
+
+
 
 function zConvertToMilitaryTime( ampm, hours, minutes, leadingZero ) {
 	var militaryHours;
@@ -5855,7 +7235,8 @@ function zCalculateMonthlyPayment(){
 	var zModalPosIntervalId=false;
 	var zModalIndex=0;
 	var zModalKeepOpen=false;
-	var zModalSideReduce=50;
+	var zModalSideReduce=30;
+
 	function zModalLockPosition(e){
 		var el = document.getElementById("zModalOverlayDiv"); 
 		if(el && el.style.display==="block"){
@@ -5866,7 +7247,9 @@ function zCalculateMonthlyPayment(){
 			return true;
 		}
 	}
-	function zShowModalStandard(url, maxWidth, maxHeight, disableClose, fullscreen){
+
+	var modalIndexId=1;
+	function zShowModalStandard(url, maxWidth, maxHeight, disableClose, fullscreen, padding){
 		var windowSize=zGetClientWindowSize();
 		if(url.indexOf("?") === -1){
 			url+="?";
@@ -5884,9 +7267,11 @@ function zCalculateMonthlyPayment(){
 		}
 		if(typeof fullscreen === "undefined"){
 			fullscreen=false;	
+		} 
+		if(typeof padding === "undefined"){
+			padding=20;	
 		}
-		zModalSideReduce=30;
-		var padding=20;
+		zModalSideReduce=10;
 		if(disableClose){
 			zModalSideReduce=0;
 			padding=0;
@@ -5894,21 +7279,27 @@ function zCalculateMonthlyPayment(){
 			zModalSideReduce=10;
 			padding=10;
 		}
-		var modalContent1='<iframe src="'+url+'ztv='+Math.random()+'" frameborder="0"  style=" margin:0px; border:none; overflow:auto;" seamless="seamless" width="100%" height="98%" />';		
+		window.zCurrentModalIframeId="zModalIframe"+modalIndexId;
+
+
+		modalIndexId++;
+		var modalContent1='<iframe id="'+window.zCurrentModalIframeId+'" src="'+url+'ztv='+Math.random()+'" scrolling="yes" frameborder="0"  style=" margin:0px; border:none; overflow:auto; -webkit-overflow-scrolling: touch; position:relative; " seamless="seamless" width="100%" height="98%" />';		
 		zShowModal(modalContent1,{
-			'width':Math.min(maxWidth, windowSize.width-zModalSideReduce),
-			'height':Math.min(maxHeight, windowSize.height),
+			'width':maxWidth, // windowSize.width-zModalSideReduce
+			'height':maxHeight, // , windowSize.height
 			"maxWidth":maxWidth, 
 			"maxHeight":maxHeight, 
 			"padding":padding,
 
 			"disableClose":disableClose, 
 			"fullscreen":fullscreen});
+
 	}
 	function zFixModalPos(){
 		zScrollbarWidth=1;
 		zGetClientWindowSize();
 		var windowSize=zWindowSize;
+
 		for(var i=1;i<=zModalIndex;i++){
 			var el = document.getElementById("zModalOverlayDivContainer"+i);
 			var el2 = document.getElementById("zModalOverlayDivInner"+i);
@@ -5981,6 +7372,17 @@ function zCalculateMonthlyPayment(){
 			
 		}
 	}
+	function stopBodyScrolling (bool) {
+
+	    if (bool === true) {
+	        document.body.addEventListener("touchmove", freezeVp, false);
+	    } else {
+	        document.body.removeEventListener("touchmove", freezeVp, false);
+	    }
+	}
+	function freezeVp(e) {
+	    e.preventDefault();
+	}
 	function zShowModal(content, obj){
 		var d=document.body || document.documentElement;
 		zModalIndex++;
@@ -6016,13 +7418,26 @@ function zCalculateMonthlyPayment(){
 		}
 		var b='';
 		if(!disableClose){
-			b='<div class="zCloseModalButton'+zModalIndex+'" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>';  
+			b='<div class="zCloseModalButton'+zModalIndex+'" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="#" onclick="zCloseModal();return false;" style="color:#FFF !important;">X Close</a></div>';  
 		}
-		var h='<div id="zModalOverlayDivContainer'+zModalIndex+'" class="zModalOverlayDiv">'+b+'<div id="zModalOverlayDivInner'+zModalIndex+'" class="zModalOverlayDiv2"></div></div>';
+		var h='<div id="zModalOverlayDivContainer'+zModalIndex+'" class="zModalOverlayDiv">'+b+'<div id="zModalOverlayDivInner'+zModalIndex+'" class="zModalOverlayDiv2" style=" -webkit-overflow-scrolling: touch !important; overflow:auto !important;"></div></div>'; 
+  
+
+
+  
+
 		$(d).append(h);
 		if(!zArrModal[zModalIndex].disableResize){
-			d.style.overflow="hidden";
+			var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+			if(iOS){
+				d.style.overflow="hidden";
+				//d.style.position="fixed";
+				d.style.position="static";
+			}else{
+				d.style.overflow="hidden";
+			}
 		}
+
 		zGetClientWindowSize();
 		$(".zModalOverlayDiv2").css("padding", zArrModal[zModalIndex].padding+"px");
 		var windowSize=zWindowSize;
@@ -6084,7 +7499,8 @@ function zCalculateMonthlyPayment(){
 				var dover1=document.getElementById("zModalOverlayDiv");
 				dover1.style.backgroundImage="url(/z/a/images/bg-checker.gif)";
 			}
-		}
+		} 
+		stopBodyScrolling(true);
 		var el = document.getElementById("zModalOverlayDivContainer"+zModalIndex);
 		var el2 = document.getElementById("zModalOverlayDivInner"+zModalIndex);
 		el.style.display = "block";
@@ -6094,7 +7510,7 @@ function zCalculateMonthlyPayment(){
 			setTimeout(function(){zModalKeepOpen=false;},100); 
 			return false;
 		};
-			el2.innerHTML=content;  	
+		el2.innerHTML=content;  	
 		if(disableClose){
 			el.onclick=function(){};
 		}else{
@@ -6103,14 +7519,20 @@ function zCalculateMonthlyPayment(){
 				zCloseModal();
 			};
 			//right:20px; top:5px; position:fixed; 
-			//el2.innerHTML='<div class="zCloseModalButton" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="javascript:void(0);" onclick="zCloseModal();" style="color:#CCC;">X Close</a></div>'+content;  
+			//el2.innerHTML='<div class="zCloseModalButton" style="width:80px; text-align:right; left:0px; top:0px; position:relative; float:left;  font-weight:bold;"><a href="#" onclick="zCloseModal();return false;" style="color:#CCC;">X Close</a></div>'+content;  
 		}
 
+ 
 		if($(".zModalOverlayDiv2 iframe").length){
-			$(".zModalOverlayDiv2").css("overflow", "hidden");
+			if(!zIsTouchscreen()){
+				$(".zModalOverlayDiv2").css("overflow", "hidden");
+			}
 			$(".zModalOverlayDiv2 iframe").height("100%");
+			$(".zModalOverlayDiv2 iframe").css("position", "relative");
 		}else{
-			$(".zModalOverlayDiv2").css("overflow", "auto");
+			if(!zIsTouchscreen()){
+				$(".zModalOverlayDiv2").css("overflow", "auto");
+			}
 		}
 		el.style.top=zArrModal[zModalIndex].scrollPosition[1]+"px";
 		el.style.left=zArrModal[zModalIndex].scrollPosition[0]+"px";
@@ -6132,8 +7554,17 @@ function zCalculateMonthlyPayment(){
 			"top":(top-25)+"px"
 		});
 		zModalPosIntervalId=setInterval(zFixModalPos,500);
+		zCurrentHash="#zModal-"+new Date().getTime()+"-"+Math.random();
+		window.location.href=zCurrentHash;  
+
+	}
+	function zSetModalSideReduce(r){
+		zModalSideReduce=r;
 	}
 	function zCloseModal(){
+
+		stopBodyScrolling(false);
+		zModalSideReduce=30;
 		var el = document.getElementById("zModalOverlayDivContainer"+zModalIndex);
 		if(!el){
 			return;
@@ -6145,7 +7576,15 @@ function zCalculateMonthlyPayment(){
 		zArrModalCloseFunctions=[];
 		zModalPosIntervalId=false;
 		var d=document.body || document.documentElement;
-		d.style.overflow="auto";
+
+		var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+		if(iOS){
+			d.style.overflow="auto";
+			d.style.position="static";
+		}else{
+			d.style.overflow="auto";
+			d.style.position="relative"; 
+		}
 		el.parentNode.removeChild(el);
 	    if(zModalIndex==1){
 			for(var i=0;i<zModalObjectHidden.length;i++){
@@ -6169,7 +7608,8 @@ function zCalculateMonthlyPayment(){
 
 		window.zImageCountObj=document.getElementById(imageCountId);
 		var modalContent1='<iframe src="/z/_com/app/image-library?method=imageform&image_library_id='+imageLibraryId+'&fieldId='+encodeURIComponent(imageLibraryFieldId)+'&ztv='+Math.random()+'"  style="margin:0px;border:none; overflow:auto;" seamless="seamless" width="100%" height="95%"><\/iframe>';		
-		zShowModal(modalContent1,{'width':windowSize.width-100,'height':windowSize.height-100});
+		zSetModalSideReduce(0);
+		zShowModal(modalContent1,{'padding':0, 'width':4000,'height':4000}); 
 	}
 
 	function zCloseThisWindow(reload){
@@ -6204,6 +7644,7 @@ function zCalculateMonthlyPayment(){
 	window.zCloseModal=zCloseModal;
 	window.zShowImageUploadWindow=zShowImageUploadWindow;
 	window.zCloseThisWindow=zCloseThisWindow;
+	window.zSetModalSideReduce=zSetModalSideReduce;
 })(jQuery, window, document, "undefined"); 
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/mouse-functions.js */
@@ -6364,10 +7805,7 @@ var zHumanMovement=false;
 		zDragOnMouseUpBackup(ev);
 		zDrag_mouseUp(ev);
 
-	});
-
-
-
+	}); 
 
 	function zEnableTextSelection(target){
 		target.onmousedown=function(){return true;};
@@ -6382,12 +7820,21 @@ var zHumanMovement=false;
 		}else if(target.onmousedown===null){ //All other route (ie: Opera)
 			target.onmousedown=function(){return false;};
 		}
-	}
+	} 
+ 
 	function zMouseHitTest(object, marginInPixels){ 
+		if(object == null || typeof object == "undefined" || typeof object.style == "undefined" || object.style.display=='none'){
+			return false;
+		}
+
+
 		var p=zGetAbsPosition(object);
 		if(typeof marginInPixels == "undefined"){
 			marginInPixels=0;
 		} 
+		if(p.width==0 && p.height==0){
+			return false;
+		}
 		if(p.x-marginInPixels <= zMousePosition.x){
 			if(p.x+p.width+marginInPixels >= zMousePosition.x){
 				if(p.y-marginInPixels <= zMousePosition.y){
@@ -6486,9 +7933,9 @@ var zHumanMovement=false;
 
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/navigation-functions.js */
-
 (function($, window, document, undefined){
-	"use strict";
+	"use strict"; 
+
 
 
 var zPagination=function(options){
@@ -6596,8 +8043,92 @@ var zPagination=function(options){
 
 }
 
-	
-window.zPagination=zPagination;
+
+	var zCurrentEditButton=false;
+	zArrDeferredFunctions.push(function(){
+		function closeOtherMenus(){
+			$(".z-manager-quick-menu").removeClass("active");
+			if(typeof zCurrentEditButton =="object"){  
+				$(".z-manager-edit-menu").removeClass("active");
+				$(".z-manager-row-active").removeClass("z-manager-row-active"); 
+				if(typeof zCurrentEditButton != "boolean" && zMouseHitTest(zCurrentEditButton)){
+
+					$(".z-manager-edit-menu", $(zCurrentEditButton).parent()).addClass("active");
+					$(zCurrentEditButton).parent().parent().parent().addClass("z-manager-row-active");
+				}else{
+					zCurrentEditButton=false;
+				}
+			}
+		}
+		
+		if($(".z-manager-edit").length != 0){
+
+			$(document).on("click", ".z-manager-quick-menu-links a", function(e){
+				e.stopPropagation(); 
+				return true;
+			});
+			$(document).on("click", ".z-manager-quick-menu", function(e){
+				e.preventDefault();
+				closeOtherMenus(); 
+				setTimeout(function(){
+					$(".z-manager-quick-menu").addClass("active");
+				},30);
+			});
+
+			$(document).on("click", ".z-manager-edit", function(e){
+				closeOtherMenus(); 
+				if($(".z-manager-edit-menu", $(this).parent()).length == 0){ 
+					return true;
+				}
+				e.preventDefault();
+				var self=this; 
+				setTimeout(function(){
+					zCurrentEditButton=self;
+				}, 30);
+				$(".z-manager-edit-menu", $(this).parent()).addClass("active");
+				$(this).parent().parent().parent().addClass("z-manager-row-active"); 
+			});
+			$(document).on("click", function(e){ 
+				closeOtherMenus();
+			});
+			$(document).on("click", ".z-manager-delete", function(e){
+
+			});
+		}
+
+		$(".z-manager-list-tab-button").on("click", function(e){
+			e.preventDefault();
+			self=this;
+			var link=$(this).attr("data-click-location");
+			if(link && window.location.href.indexOf("searchOn=") != -1){
+				window.location.href=link;
+				return;
+			}
+			$(".z-manager-list-tab-button").each(function(){
+				$(this).removeClass("active");
+				$(this).toggleClass("mobileActive");
+				if(self == this){
+					return;
+				}
+				var tab=$(this).attr("data-tab");
+				if(tab != ""){
+					$("."+tab).removeClass("active");
+					$("."+tab).removeClass("mobileActive");
+				}
+			});
+			var tab=$(this).attr("data-tab");
+			if(tab != ""){
+				$(".z-manager-tab-container").show();
+				$("."+tab).addClass("active");
+				$("."+tab).toggleClass("mobileActive"); 
+			}
+			$(this).addClass("active");
+			$(this).toggleClass("mobileActive");
+		});
+	});
+
+
+	window.zPagination=zPagination;
 })(jQuery, window, document, "undefined"); 
 
 
@@ -6630,7 +8161,12 @@ var zScrollbarWidth=0;
 		return [curleft,curtop,curwidth,curheight];
 	}
 	
-	function zGetAbsPosition(object) {  
+
+	function zGetAbsPosition(object) { 
+		if(object == null || typeof object == "undefined" || typeof object.style == "undefined" || object.style.display=='none'){
+			return {x:0, y:0, width:0, height:0 };
+		} 
+
 		var position = new Object();
 		position.x = 0;
 		position.y = 0; 
@@ -6695,15 +8231,10 @@ var zScrollbarWidth=0;
 		var r94=document.getElementById(id);
 		if(r94===null) return;
 		var p=zFindPosition(r94);
-		var isWebKit = navigator.userAgent.toLowerCase().indexOf('webkit') > -1;
 		if(!offset || offset === null){
 			offset=0;
 		}
-		if(isWebKit){
-			document.body.scrollTop=p[1]+offset;
-		}else{
-			document.documentElement.scrollTop=p[1]+offset;
-		}
+		window.scrollTo(0, p[1]+offset);
 	}
 	function zGetScrollBarWidth () {
 		if(zScrollBarWidthCached !== -1){
@@ -7013,6 +8544,16 @@ var zHelpTooltip=new Object();
 	zHelpTooltip.curTimeoutId=false;
 	zHelpTooltip.helpDiv=false;
 	zHelpTooltip.helpInnerDiv=false;
+	zHelpTooltip.getParentScroll = function (ctrl) {
+		if (ctrl == null) {
+			return null;
+		}
+		if (ctrl.scrollHeight > ctrl.clientHeight) {
+			return ctrl;
+		} else {
+			return zHelpTooltip.getParentScroll(ctrl.parentNode);
+		}
+	};
 	zHelpTooltip.showTooltip=function(){
 		clearTimeout(zHelpTooltip.curTimeoutId);
 		zHelpTooltip.curTimeoutId=false;
@@ -7021,11 +8562,13 @@ var zHelpTooltip=new Object();
 		var p=zGetAbsPosition(d);
 		//alert(this.id+" tooltip "+p.x+":"+p.y+":"+p.width+":"+p.height);
 		var ws=getWindowSize();	
-		zHelpTooltip.helpDiv.style.display="block";
+		zHelpTooltip.helpDiv.style.display="inline-block";
 		zHelpTooltip.helpInnerDiv.innerHTML=zHelpTooltip.arrTrack[this.id].title;
 		var p2=zGetAbsPosition(zHelpTooltip.helpDiv);
-		zHelpTooltip.helpDiv.style.left=Math.min(ws.width-p2.width-10, p.x+p.width+5)+"px";
-		zHelpTooltip.helpDiv.style.top=Math.max(10,(p.y)-p2.height)+"px";
+		zHelpTooltip.helpDiv.style.left = Math.min(ws.width-p2.width-10, p.x+p.width+5)+"px";
+		var dParent = zHelpTooltip.getParentScroll(d);
+		var window_offset = (p.y) - ( p2.height + $(dParent).scrollTop());
+		zHelpTooltip.helpDiv.style.top  = window_offset + "px";//Math.max(10,(p.y)-p2.height)+"px";
 		//alert(Math.min(ws.width-p.width, p.x+p.width+5)+" | "+(p.y-p.height-5));
 		return false;
 	};
@@ -7049,6 +8592,7 @@ var zHelpTooltip=new Object();
 			zHelpTooltip.curTimeoutId=setTimeout(function(){ document.getElementById(zHelpTooltip.curId).onmouseover(); }, 1000);	
 		}
 	};
+	
 	zHelpTooltip.setupHelpTooltip=function(){
 		zHelpTooltip.helpDiv=document.getElementById("zHelpToolTipDiv");
 		zHelpTooltip.helpInnerDiv=document.getElementById("zHelpToolTipInnerDiv");
@@ -7057,7 +8601,7 @@ var zHelpTooltip=new Object();
 			if(a[i].title == ""){
 				continue;
 			}
-			a[i].style.display="block"; 
+			a[i].style.display="inline-block"; 
 			zHelpTooltip.arrTrack[a[i].id]={hovering:false,title:a[i].title};
 			a[i].title="";
 			a[i].onmouseover=zHelpTooltip.hover;
@@ -7074,6 +8618,8 @@ var zHelpTooltip=new Object();
 	});
 
 })(jQuery, window, document, "undefined"); 
+
+
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/tracking-functions.js */
 
@@ -7103,6 +8649,13 @@ var zHelpTooltip=new Object();
 		var eventLabel=this.getAttribute("data-zclickeventlabel");
 		var eventAction=this.getAttribute("data-zclickeventaction");
 		var eventValue=this.getAttribute("data-zclickeventvalue");
+		var gtmEventValue=this.getAttribute("data-zclickgtmeventvalue");
+		if(gtmEventValue != null && gtmEventValue != ""){
+			window.dataLayer = window.dataLayer || [];
+			window.dataLayer.push({
+			'event' : gtmEventValue
+			});
+		}
 		
 		zTrackEvent(eventCategory, eventAction, eventLabel, eventValue, '', false);
 		if(postValue != ""){
@@ -7116,6 +8669,13 @@ var zHelpTooltip=new Object();
 		var eventLabel=this.getAttribute("data-zclickeventlabel");
 		var eventAction=this.getAttribute("data-zclickeventaction");
 		var eventValue=this.getAttribute("data-zclickeventvalue");
+		var gtmEventValue=this.getAttribute("data-zclickgtmeventvalue");
+		if(gtmEventValue != null && gtmEventValue != ""){
+			window.dataLayer = window.dataLayer || [];
+			window.dataLayer.push({
+			'event' : gtmEventValue
+			});
+		}
 		var newWindow=false;
 		if(this.target == "_blank"){
 			newWindow=true;
@@ -7127,11 +8687,35 @@ var zHelpTooltip=new Object();
 			return false;
 		}
 	}
+	function zTrackPageView(link){
+		if(typeof window['gtag'] != "undefined"){
+			var b=window['gtag'];
+			b('config', {'page_path': link}); 
+		}else if(typeof window['GoogleAnalyticsObject'] != "undefined"){
+			var b=window[window['GoogleAnalyticsObject']];
+			b('send', {
+				'hitType' : 'pageview',
+				'page' : link // Virtual page (aka, does not actually exist) that you can now track in GA Goals as a destination page.
+			}); 
+		}else if(typeof pageTracker != "undefined" && typeof pageTracker._trackPageview != "undefined"){
+			pageTracker._trackPageview(link);
+		}else if(typeof _gaq != "undefined" && typeof _gaq.push != "undefined"){ 
+			_gaq.push(['_trackPageview',link]); 
+		}else{
+			console.log('Google Analytics not detected when trying to store this pageview: '+link);
+		}
+
+	}
+
+	
+
+
 
 	function zTrackEvent(eventCategory,eventAction, eventLabel, eventValue, gotoToURLAfterEvent, newWindow){
 		// detect when google analytics is disabled on purpose to avoid running this.
+		var registerTimeout=0;
 		if(gotoToURLAfterEvent != ""){
-			setTimeout(function(){ 
+			registerTimeout=setTimeout(function(){ 
 				if(!newWindow){ 
 					console.log('event tracking failed - loading URL anyway: '+gotoToURLAfterEvent);
 					window.location.href = gotoToURLAfterEvent;
@@ -7140,6 +8724,7 @@ var zHelpTooltip=new Object();
 		}
 		if(typeof zVisitorTrackingDisabled != "undefined"){
 			if(gotoToURLAfterEvent != ""){
+				clearTimeout(registerTimeout);
 				setTimeout(function(){
 					if(!newWindow){
 						window.location.href = gotoToURLAfterEvent;
@@ -7147,76 +8732,131 @@ var zHelpTooltip=new Object();
 				}, 100);
 			}
 			return; 
-		}
-			if(typeof window['GoogleAnalyticsObject'] != "undefined"){
-				var b=window[window['GoogleAnalyticsObject']];
-				if(gotoToURLAfterEvent != ""){
-					if(eventLabel != ""){
-						console.log('track event 1:'+eventValue);
-						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {'hitCallback': function(){if(!newWindow && gotoToURLAfterEvent != ""){window.location.href = gotoToURLAfterEvent;}}});
-					}else{
-						console.log('track event 2:'+eventAction);
-						b('send', 'event', eventCategory, eventAction, {'hitCallback': function(){if(!newWindow && gotoToURLAfterEvent != ""){window.location.href = gotoToURLAfterEvent;}}});
-					}
-				}else{
-					if(eventLabel != ""){
-						console.log('track event 3:'+eventValue);
-						b('send', 'event', eventCategory, eventAction, eventLabel, eventValue);
-					}else{
-						console.log('track event 4:'+eventAction);
-						b('send', 'event', eventCategory, eventAction);
-					}
-				}
-			}else if(typeof pageTracker != "undefined" && typeof pageTracker._trackPageview != "undefined"){
+		} 
+		if(typeof window['gtag'] != "undefined"){
+			var b=window['gtag'];
+			if(gotoToURLAfterEvent != ""){
 				if(eventLabel != ""){
-					pageTracker._trackEvent(eventCategory, eventAction, eventLabel, eventValue);
+					console.log('track event 1:'+eventValue);
+					b('event', eventAction, {
+					  'event_category': eventCategory,
+					  'event_label': eventLabel,
+					  value:eventValue,
+					  'event_callback': function(){
+							clearTimeout(registerTimeout);
+							if(!newWindow && gotoToURLAfterEvent != ""){
+								window.location.href = gotoToURLAfterEvent;
+							}
+					  }
+					}); 
 				}else{
-					pageTracker._trackEvent(eventCategory, eventAction);
-				}
-				if(gotoToURLAfterEvent != ""){
-					setTimeout(function(){ 
-						if(!newWindow){
-							window.location.href = gotoToURLAfterEvent;
-						}
-					}, 500);
-				}
-			}else if(typeof _gaq != "undefined" && typeof _gaq.push != "undefined"){
-				if(gotoToURLAfterEvent != ""){
-					_gaq.push(['_set','hitCallback',function(){
-						if(!newWindow){
-							window.location.href = gotoToURLAfterEvent;
-						}
-					}]);
-				}
-				if(eventLabel != ""){
-					_gaq.push(['_trackEvent', eventCategory, eventAction, eventLabel, eventValue]);
-				}else{
-					_gaq.push(['_trackEvent', eventCategory, eventAction]);
+					console.log('track event 2:'+eventAction);
+					b('event', eventAction, {
+					  'event_category': eventCategory, 
+					  value:eventValue,
+					  'event_callback': function(){
+							clearTimeout(registerTimeout);
+							if(!newWindow && gotoToURLAfterEvent != ""){
+								window.location.href = gotoToURLAfterEvent;
+							}
+					  }
+					});  
 				}
 			}else{
-				if(zIsLoggedIn()){
-					if(!newWindow && gotoToURLAfterEvent != ""){
+				if(eventLabel != ""){
+					console.log('track event 3:'+eventValue);
+					b('event', eventAction, {
+					  'event_category': eventCategory,
+					  'event_label': eventLabel,
+					  value:eventValue
+					}); 
+				}else{
+					console.log('track event 4:'+eventAction);
+					b('event', eventAction, {
+					  'event_category': eventCategory,
+					  value:eventValue
+					}); 
+				}
+			}
+		}else if(typeof window['GoogleAnalyticsObject'] != "undefined"){
+			var b=window[window['GoogleAnalyticsObject']];
+			if(gotoToURLAfterEvent != ""){
+				if(eventLabel != ""){
+					console.log('track event 1:'+eventValue);
+					b('send', 'event', eventCategory, eventAction, eventLabel, eventValue, {
+						'hitCallback': function(){
+							clearTimeout(registerTimeout);
+							if(!newWindow && gotoToURLAfterEvent != ""){
+								window.location.href = gotoToURLAfterEvent;
+							}
+						}
+					});
+				}else{
+					console.log('track event 2:'+eventAction);
+					b('send', 'event', eventCategory, eventAction, {
+						'hitCallback': function(){ 
+							clearTimeout(registerTimeout);
+							if(!newWindow && gotoToURLAfterEvent != ""){
+								window.location.href = gotoToURLAfterEvent;
+							}
+						}
+					});
+				}
+			}else{
+				if(eventLabel != ""){
+					console.log('track event 3:'+eventValue);
+					b('send', 'event', eventCategory, eventAction, eventLabel, eventValue);
+				}else{
+					console.log('track event 4:'+eventAction);
+					b('send', 'event', eventCategory, eventAction);
+				}
+			}
+		}else if(typeof pageTracker != "undefined" && typeof pageTracker._trackPageview != "undefined"){
+			if(eventLabel != ""){
+				pageTracker._trackEvent(eventCategory, eventAction, eventLabel, eventValue);
+			}else{
+				pageTracker._trackEvent(eventCategory, eventAction);
+			} 
+		}else if(typeof _gaq != "undefined" && typeof _gaq.push != "undefined"){
+			if(gotoToURLAfterEvent != ""){
+				_gaq.push(['_set','hitCallback',function(){
+					clearTimeout(registerTimeout);
+					if(!newWindow){
 						window.location.href = gotoToURLAfterEvent;
 					}
-				}else{
-					throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
-				}
-				//alert("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+				}]);
 			}
-		/*try{
-		}catch(e){
+			if(eventLabel != ""){
+				_gaq.push(['_trackEvent', eventCategory, eventAction, eventLabel, eventValue]);
+			}else{
+				_gaq.push(['_trackEvent', eventCategory, eventAction]);
+			}
+		}else{
 			if(zIsLoggedIn()){
-				if(!newWindow){
+				if(!newWindow && gotoToURLAfterEvent != ""){
 					window.location.href = gotoToURLAfterEvent;
 				}
 			}else{
-				//throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
+				throw("Google analytics tracking code is not installed, or is using different syntax. Event tracking will not work until this is correct.");
 			}
-		}*/
+		}
 	}
 
 	// track all outbound links in google analytics events
-	$(document).on("click", "a", function(e){
+	$(document).on('touchstart', "a", function() {
+	    this.documentClick = true;
+	});
+	$(document).on('touchmove', "a", function() {
+	    this.documentClick = false;
+	});
+	$(document).on('click touchend', "a", function(e) { 
+	    if (e.type == "click") this.documentClick = true;
+	    if (typeof this.documentClick == "undefined" || !this.documentClick){
+	    	return true;
+	    } 
+	    if($(this).hasClass("zDisableTrackOutbound")){
+	    	return true;
+	    }
    		var d=window.location.href;
    		var slash=d.indexOf("/", 9); 
    		if(slash==-1){
@@ -7243,12 +8883,12 @@ var zHelpTooltip=new Object();
 		   		return true;
 		   	}
 	   	}
-   	}); 
-
-   	
+   	});  
 
 	zArrLoadFunctions.push({functionName:zSetupClickTrackDisplay});
 	window.zSetupClickTrackDisplay=zSetupClickTrackDisplay;
+	window.zTrackPageView=zTrackPageView;
+	window.zTrackPageview=zTrackPageView; // to help with typos
 	window.zTrackEvent=zTrackEvent;
 	window.zClickTrackDisplayURL=zClickTrackDisplayURL;
 	window.zClickTrackDisplayValue=zClickTrackDisplayValue;
@@ -7275,6 +8915,17 @@ var zVideoJsEmbedIndex=0;
 
 (function($, window, document, undefined){
 	"use strict";
+ 
+	function checkForPlayingVideo(){ 
+		$("video").each(function(){
+			if(this.currentTime != 0){
+				clearInterval(videoAutoPlayDetectId);
+				$(".zHideWhenVideoAutoPlays").hide();
+			}
+		}); 
+	}
+	var videoAutoPlayDetectId=setInterval(checkForPlayingVideo, 100);
+	checkForPlayingVideo();
 
 	function zAjaxDeleteVideoCallback(r){
 		var r2=eval('(' + r + ')');
@@ -7693,7 +9344,16 @@ var zVideoJsEmbedIndex=0;
 
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/zCart.js */
+/*
+usage
+self.add requires html element like this:
 
+				arrId.push(items[i].id+"|"+items[i].quantity+"|"+items[i].options.join("~"));
+
+	// cookie format is productId|quantity|optionIdList,productId2|quantity2|optionIdList2
+options: 
+
+*/
 (function($, window, document, undefined){
 	"use strict";
 	var zCart=function(options){
@@ -7702,8 +9362,7 @@ var zVideoJsEmbedIndex=0;
 		var idOffset=0;
 		var count=0;
 		var cartLoaded=false;
-		var items={};
-		var itemIds={};
+		var items={}; 
 		if(typeof options === undefined){
 			options={};
 		}
@@ -7713,7 +9372,7 @@ var zVideoJsEmbedIndex=0;
 		
 		// force defaults
 		options.arrData=zso(options, 'arrData', false, []);
-		options.viewCartCallback=zso(options, 'viewCartCallback', false, function(jsonCartData){});
+		//options.viewCartCallback=zso(options, 'viewCartCallback', false, function(jsonCartData){});
 		options.viewCartURL=zso(options, 'viewCartURL', false, '');
 		options.debug=zso(options, 'debug', false, false);
 		options.name=zso(options, 'name', false, '');
@@ -7722,20 +9381,33 @@ var zVideoJsEmbedIndex=0;
 		options.selectedButtonText=zso(options, 'selectedButtonText', false, 'Already in cart');
 		options.checkoutCallback=zso(options, 'checkoutCallback', false,  function(){self.checkout(); }); 
 		options.changeCallback=zso(options, 'changeCallback', false, function(){});
+		options.allowMultiplePurchase=zso(options, 'allowMultiplePurchase', false, false);
+
+		var quantityWasWrong=false;
 		function setQuantity(){
-			var itemId=this.getAttribute("data-zcart-id");
+			var offset=this.getAttribute("data-zcart-id");
 			var quantity=parseInt(this.value);
+			if(quantity<=0){
+				if(!quantityWasWrong){
+					alert("You must enter a quantity of 1 or more.");
+				} 
+				quantityWasWrong=true;
+				return false;
+			}else{
+				quantityWasWrong=false;
+			}
 			if(isNaN(quantity)){
 				this.value=1;
 				return false;
 			}
-			self.updateQuantity(itemId, quantity);
+			self.updateQuantity(offset, quantity);
 			return true;
 		}
 		function init(options){
 			$cartDiv=$(".zcart."+options.name);
 			if($cartDiv.length === 0){
-				throw(options.name+" is not defined.  zCart requires a valid object or selector for the cart items to be rendered in.");
+				console.log("Cart selector had no matches: .zcart."+options.name+" | zCart requires a valid object or selector for the cart items to be rendered in. This can be ignored on pages where the cart is not needed.");
+				return;
 			}
 			// setup mouse events for add and remove buttons for this cart's name only.
 			$(".zcart-add."+options.name).bind('click', function(){
@@ -7751,19 +9423,11 @@ var zVideoJsEmbedIndex=0;
 				}
 				self.add(jsonObj);
 				return false;
-			}).each(function(){
-				var jsonObj=eval("("+this.getAttribute("data-zcart-json")+")");
-				this.setAttribute("data-zcart-id", jsonObj.id);
-				
-				if(zKeyExists(itemIds, jsonObj.id)){
-					$(this).addClass("zcart-add-saved");
-					$(this).html(jsonObj.removeHTML);
-				}
-			});
+			}); 
 			$(".zcart-item-quantity-input").bind('keyup paste blur', setQuantity);
 			$(".zcart-remove."+options.name).bind('click', function(){
-				var itemId=this.getAttribute("data-zcart-id");
-				self.remove(itemId);
+				var offset=this.getAttribute("data-zcart-id");
+				self.remove(offset);
 				return false;
 			});
 			$(".zcart-refresh."+options.name).bind('click', function(){
@@ -7771,14 +9435,15 @@ var zVideoJsEmbedIndex=0;
 				return false;
 			});
 			$(".zcart-view."+options.name).bind('click', function(){
-				if($(this).hasClass("zcart-view-open")){
+				if($(this).hasClass("zcart-view-open")){ 
+					$cartDiv.slideUp("fast");  
 					$(this).removeClass("zcart-view-open");
 					$(this).html(this.getAttribute("data-zcart-viewHTML"));
 				}else{
 					$(this).addClass("zcart-view-open");
 					$(this).html(this.getAttribute("data-zcart-hideHTML"));
+					self.view();
 				}
-				self.view();
 				return false;
 			});
 			$(".zcart-checkout."+options.name).bind('click', function(){
@@ -7793,12 +9458,13 @@ var zVideoJsEmbedIndex=0;
 			self.updateCount(); 
 			cartLoaded=true;
 		};
-		self.viewCallback=function(jsonCartData){
-			options.viewCartCallback(jsonCartData);
-			$cartDiv.slideToggle("fast");
+		self.viewCallback=function(arrCart){
+			// put the cart data in the items record
+			items=JSON.parse(arrCart); 
+			self.renderItems();
+			$cartDiv.slideDown("fast"); 
 		}
 		self.view=function(){
-
 			if(options.viewCartURL != ""){
 				console.log("loading options.viewCartURL:"+options.viewCartURL);
 				// maybe show a loading screen here
@@ -7813,7 +9479,7 @@ var zVideoJsEmbedIndex=0;
 				tempObj.ignoreOldRequests=true;
 				zAjax(tempObj);
 
-			}else{
+			}else{ 
 				$cartDiv.slideToggle("fast");
 			}
 		};
@@ -7828,7 +9494,7 @@ var zVideoJsEmbedIndex=0;
 			return items;
 		};
 		self.readCookie=function(){
-			var value=zGetCookie("zcart-"+options.name);
+			var value=zGetCookie(new String("zcart-"+options.name).toUpperCase());
 			if(value === ""){
 				return;
 			}
@@ -7836,29 +9502,57 @@ var zVideoJsEmbedIndex=0;
 			if(options.debug) console.log("From cookie:"+arrId.join(","));
 			for(var i in arrId){
 				if(arrId[i] !== ""){
-					var arrItem=arrId[i].split("|");
+					var arrItem = arrId[i].split("|"); 
 					if(options.debug) console.log("Added from cookie: "+options.arrData[arrItem[0]].id);
-					options.arrData[arrItem[0]].quantity=arrItem[1];
-					self.add(options.arrData[arrItem[0]]);
+					
+					/*
+must allow adding the same product more then once with an option
+
+the cart has to assign its own ids to all of the items in the cart.
+the buttons have data-cart-id.
+the "remove" replacement feature has to use the id, but the other functions need to use the offset
+					*/
+					var item={
+						id:arrItem[0],
+						quantity:arrItem[1],
+						options:[]
+					};
+					if(arrItem.length>=3){
+						item.options=arrItem[2].split("~");
+					}
+					self.add(item);
+					/*
+					if(zKeyExists(options.arrData, arrItem[0])){
+						options.arrData[arrItem[0]].quantity=arrItem[1];
+						if(arrItem.length >= 3){
+							options.arrData[arrItem[0]].options=arrItem[2];
+						}else{
+							options.arrData[arrItem[0]].options=[];
+						}
+						self.add(options.arrData[arrItem[0]]);
+					}*/
 				}
 			} 
 		};
 		self.updateCookie=function(){
 			var arrId=[];
 			for(var i in items){
-				arrId.push(items[i].id+"|"+items[i].quantity);
+				if(typeof items[i].options == "undefined"){
+					items[i].options=[];
+				}
+				arrId.push(items[i].id+"|"+items[i].quantity+"|"+items[i].options.join("~"));
 			}
-			zSetCookie({key:"zcart-"+options.name,value:arrId.join(","),futureSeconds:31536000,enableSubdomains:false}); 
+			zSetCookie({key:new String("zcart-"+options.name).toUpperCase(),value:arrId.join(","),path:'/',futureSeconds:31536000,enableSubdomains:false}); 
 		};
 		self.updateCount=function(){
 			if(options.debug) console.log("count is:"+count);
 			if(count===0){
 				$cartDiv.html(options.emptyCartMessage);
 			}
+
 			self.updateCookie();
 			self.renderCount();
-			if(cartLoaded){
-				options.changeCallback(self);
+			if(cartLoaded){ 
 				$(".zcart-count-container."+options.name).css({
 					"background-color": "#000",
 					"color": "#FFF"
@@ -7870,78 +9564,95 @@ var zVideoJsEmbedIndex=0;
 					duration:'slow',
 					easing:'easeInElastic'
 				});
-				}
+			}
+			options.changeCallback(self);
 		};
 		self.getCount=function(){
 			return count;
 		}
 		self.add=function(jsonObj){
 			// mark all other "add" buttons as saved too if their id matches.
-			if(zKeyExists(itemIds, jsonObj.id)){ 
-				self.remove(jsonObj.id);
+			if(jsonObj.quantity <= 0){
+				alert("You must enter a quantity of 1 or more.");
 				return;
-			}else{
-				$(".zcart-add."+options.name).each(function(){
-					if(!$(this).hasClass("zcart-add-saved")){
-						var tempJsonObj=eval("("+this.getAttribute("data-zcart-json")+")"); 
-						if(jsonObj.id === tempJsonObj.id){
-							$(this).addClass("zcart-add-saved").html(tempJsonObj.removeHTML);
-						}
-					}
-				});
 			}
-
+			var found=false;
+			var foundOffset=-1;
+			if(!options.allowMultiplePurchase){
+				for(var i in items){
+					if(items[i].id == jsonObj.id){
+						alert('This product is already in your cart. Please view cart and change quantity instead.');
+						return;
+						//found=true;
+						//foundOffset=items[i].offset;
+					}
+				}
+			}
 			
-			idOffset++;
+			
+			jsonObj.offset=idOffset;
 			count++;
 			if(options.debug) console.log('Adding item #'+jsonObj.id+" to cart: "+options.name+" with quantity="+jsonObj.quantity);
-			var itemString=self.renderItem(jsonObj, idOffset); 
+			var itemString=self.renderItem(jsonObj); 
 			if(count===1){
 				$cartDiv.html(itemString);
 			}else{
 				$cartDiv.append(itemString);
 			}
-			$('#'+options.name+'zcart-item-delete-link'+idOffset).bind('click', function(){
-				var itemId=this.getAttribute("data-zcart-id");
-				self.remove(itemId);
-				return false;
-			});
-			$("#"+options.name+"zcart-item"+idOffset).hide().fadeIn('fast');
-			$(".zcart-item-quantity-input[data-zcart-id='"+jsonObj.id+"']").bind('keyup paste blur', setQuantity);
+			self.bindCartItemEvents(idOffset);
 			jsonObj.cartId=idOffset;
 			jsonObj.div=document.getElementById(options.name+"zcart-item"+idOffset);
 			items[idOffset]=jsonObj;
-			itemIds[jsonObj.id]=idOffset; 
+			idOffset++;
 			self.updateCount();
 		};
-		self.updateQuantity=function(itemId, quantity){
-			if(!zKeyExists(itemIds, itemId)){
-				return;
-			}
-			var id=itemIds[itemId];
-			items[id].quantity=quantity;
-		}
-		self.remove=function(itemId){
-			if(!zKeyExists(itemIds, itemId)){
-				return;
-			}
-			var id=itemIds[itemId];
-			if(options.debug) console.log('Removing item #'+itemId+" to cart: "+options.name);   
-			delete items[id];
-			delete itemIds[itemId];
-			
-			$(".zcart-add."+options.name).each(function(){
-				if($(this).hasClass("zcart-add-saved")){
-					var tempJsonObj=eval("("+this.getAttribute("data-zcart-json")+")"); 
-					if(itemId === tempJsonObj.id){
-						$(this).removeClass("zcart-add-saved").html(tempJsonObj.addHTML);
-					}
-				}
+		self.bindCartItemEvents=function(offset){
+			$('#'+options.name+'zcart-item-delete-link'+offset).on('click', function(e){
+				e.preventDefault(); 
+				var offset=this.getAttribute("data-zcart-id"); 
+				self.remove(offset); 
 			});
+			$("#"+options.name+"zcart-item"+offset).hide().fadeIn('fast');
+			$(".zcart-item-quantity-input[data-zcart-id='"+offset+"']").bind('keyup paste blur', setQuantity);
+
+		}
+		self.updatePrice = function(offset, price){
+			if(!zKeyExists(items, offset)){
+				return -1;
+			}
+			items[offset].price = price;
+			self.renderItems();
+			self.updateCookie();
+			return 1;
+		};
+		self.updateQuantity=function(offset, quantity){
+			if(!zKeyExists(items, offset)){
+				return;
+			}
+			items[offset].quantity=quantity;
+			self.updateCookie();
+		}
+		self.remove=function(offset){ 
+			if(!zKeyExists(items, offset)){
+				return;
+			}
+			var item=items[offset];
+			if(options.debug) console.log('Removing item #'+item.id+" from cart: "+options.name);   
+			delete items[offset];
 			
-			$("#"+options.name+"zcart-item"+id).fadeOut('fast',
+			if(!options.allowMultiplePurchase){
+				$(".zcart-add."+options.name).each(function(){
+					if($(this).hasClass("zcart-add-saved")){
+						var tempJsonObj=eval("("+this.getAttribute("data-zcart-json")+")");  
+						if(item.id == tempJsonObj.id){
+							$(this).removeClass("zcart-add-saved").html(tempJsonObj.addHTML);
+						}
+					}
+				});
+			}
+			$("#"+options.name+"zcart-item"+offset).fadeOut('fast',
 				function(){
-					$("#"+options.name+"zcart-item"+id).remove();
+					$("#"+options.name+"zcart-item"+offset).remove();
 				}
 			);
 			count--;
@@ -7954,7 +9665,7 @@ var zVideoJsEmbedIndex=0;
 			}
 			return html;
 		};
-		self.renderItem=function(obj, id){
+		self.renderItem=function(obj){
 			var arrR=[];
 			var itemTemplate=$(".zcart-templates .zcart-item");
 			if(itemTemplate.length===0){
@@ -7964,9 +9675,11 @@ var zVideoJsEmbedIndex=0;
 			var tempObj={};
 			for(var i in obj){
 				tempObj[i]=obj[i];
-			}
-			tempObj.itemId=options.name+'zcart-item'+id;
-			tempObj.deleteId=options.name+'zcart-item-delete-link'+id;
+			} 
+			tempObj.itemId=options.name+'zcart-item'+tempObj.offset;
+			tempObj.deleteId=options.name+'zcart-item-delete-link'+tempObj.offset;
+
+			console.log(tempObj);
 			var newHTML=$(self.replaceTags(itemTemplate, tempObj));
 			$(".zcart-item-image", newHTML).each(function(){
 				var a=this.getAttribute("data-image");
@@ -7975,7 +9688,10 @@ var zVideoJsEmbedIndex=0;
 				}
 			});
 			$("a", newHTML).each(function(){
-				this.href=this.getAttribute("data-url");
+				var h=this.getAttribute("data-url");
+				if(h){
+					this.href=h;
+				}
 			});
 			newHTML.addClass(options.name);
 			return newHTML[0].outerHTML;
@@ -7983,9 +9699,13 @@ var zVideoJsEmbedIndex=0;
 		self.renderItems=function(){
 			var arrItems=[];
 			for(var i in items){
-				arrItems.push(self.renderItem(items[i], items[i].cartId));
+				arrItems.push(self.renderItem(items[i]));
 			}
 			$cartDiv.html(arrItems).hide().fadeIn('fast');
+
+			for(var i=0;i<items.length;i++){
+				self.bindCartItemEvents(i);
+			}
 			self.updateCount();
 		};
 		self.ajaxAddCallback=function(){
@@ -7995,17 +9715,17 @@ var zVideoJsEmbedIndex=0;
 
 		};
 		self.clear=function(){
-			items=[];
-			itemIds=[]; 
+			items={};
 			count=0;
 			idOffset=0;
-			$(".zcart-add."+options.name).each(function(){
-				if($(this).hasClass("zcart-add-saved")){
-					var tempJsonObj=eval("("+this.getAttribute("data-zcart-json")+")"); 
-					$(this).removeClass("zcart-add-saved").html(tempJsonObj.addHTML);
-				}
-			});
-			
+			if(!options.allowMultiplePurchase){
+				$(".zcart-add."+options.name).each(function(){
+					if($(this).hasClass("zcart-add-saved")){
+						var tempJsonObj=eval("("+this.getAttribute("data-zcart-json")+")"); 
+						$(this).removeClass("zcart-add-saved").html(tempJsonObj.addHTML);
+					}
+				});
+			}
 			$(".zcart-item."+options.name).fadeOut('fast',
 				function(){
 					if ($(".zcart-item."+options.name+":animated").length === 0){
@@ -8029,6 +9749,8 @@ var zVideoJsEmbedIndex=0;
 	}; 
 	window.zCart=zCart;
 })(jQuery, window, document, "undefined"); 
+
+
 
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo/zRecurringEvent.js */
@@ -9327,6 +11049,56 @@ var zVideoJsEmbedIndex=0;
 })(jQuery, window, document, "undefined"); 
 
 
+/* /var/jetendo-server/jetendo/public/javascript/jetendo/zs.js */
+/*
+
+Types (see jetendo/statistic_type table):
+	1 = Listing
+	2 = Profile
+	3 = Ad
+	4 = Link
+	5 = Phone Link
+
+Usage:
+	application.zcore.skin.includeJS( '/z/javascript/jetendo/zs.js' );
+
+	_zs.track( {
+		'type': 1,
+		'event': 'view',
+		'label': 'My Listing'
+	} );
+
+*/
+
+var _zs = {
+	'track': function( options ) {
+		if ( ! ( 'type' in options ) ) {
+			console.error( '_zs type missing' );
+			return;
+		}
+		if ( ! ( 'event' in options ) ) {
+			console.error( '_zs event missing' );
+			return;
+		}
+		if ( ! ( 'label' in options ) ) {
+			console.error( '_zs label missing' );
+			return;
+		}
+
+		var ajaxObj = {
+			id: '_zs',
+			method: 'post',
+			postObj: options,
+			url: '/z/_com/app/zs?method=trackAjax',
+			cache: false,
+			callback: function() {},
+			errorCallback: function() {}
+		};
+		zAjax( ajaxObj );
+	}
+};
+
+
 /* /var/jetendo-server/jetendo/public/javascript/jetendo-listing/listing-ajax.js */
 
 (function($, window, document, undefined){
@@ -9369,7 +11141,6 @@ function zLoadListingSavedSearches(){
 			}catch(e){
 				$(currentDiv).html("Listings not available at this time. Please try again later. Error Code ##2");
 				throw e;
-				return;
 			} 
 		};
 
@@ -9639,7 +11410,7 @@ function zListingDisplayHelpBox(){
 	'<div id="zListingHelpDiv" style="display:none; border:1px solid #990000; padding:10px; padding-top:0px;">'+
 	'<p style="font-size:14px; font-weight:bold;">Search Directions:</p>'+
 	'<p>Click on one of the search options on the sidebar and use the text fields, sliders and check boxes to enter your search data.  After you are done, click "Show Results" and the results will load on the right. </p>'+
-	'<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Please the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>'+
+	'<p><strong>City Search:</strong> Start typing a city into the box and our system will automatically show you a list of matching cities.  Select each city you wish to include in the search by using the arrow keys up and down.  Press the enter key or left click with your mouse to confirm the selection.  To remove a city, click the "X" button to the left of the city name. Only cities matching the ones in our system may be selected.</p>'+
 	'<p>After typing an entry, click "Update Results" to update your search. </p>'+
 	'<p>You can select or type as many options as you want.</p>'+
 	'<p>Your search will automatically show the # of matching listings as you update each search field.</p>'+
@@ -10476,7 +12247,14 @@ function zGetMapDistance(lat1, lon1, lat2, lon2){
 function zGeocodeAddress() {
 	if(arrAddress.length <= curIndex) return;
 	if(debugajaxgeocoder) f1.value+="run geocode: "+arrAddress[curIndex]+" for listing_id="+arrListingId[curIndex]+"\n";
-		geocoder.geocode( { 'address': arrAddress[curIndex]+" "+arrAddressZip[curIndex]}, function(results, status) {
+
+
+	if(!zIsGeocoderAvailable()){
+		// prevent more geocoding for this user.
+		return;
+	}
+
+	geocoder.geocode( { 'address': arrAddress[curIndex]+" "+arrAddressZip[curIndex]}, function(results, status) {
 		var r="";
 		if (status == google.maps.GeocoderStatus.OK) {
 			var a1=new Array();
@@ -10640,7 +12418,7 @@ function zlsUpdateMapSize(){
 	mapProps.curStageHeight=zWindowSize.height;
 	mapProps.latBlocks=Math.ceil(mapProps.curStageHeight/mapProps.longBlockWidth);
 	mapProps.longBlocks=Math.ceil(mapProps.curStageWidth/mapProps.latBlockWidth);
-	myGoogleMapV3.style.width=mapProps.curStageWidth+"px";
+	//myGoogleMapV3.style.width=mapProps.curStageWidth+"px";
 	myGoogleMapV3.style.height=mapProps.curStageHeight+"px";
 }
 function onGMAPLoadV3(){
@@ -10650,7 +12428,7 @@ function onGMAPLoadV3(){
 	if(mid3===null){
 		return;
 	}
-	myGoogleMapV3.style.width=mapProps.curStageWidth+"px";
+	//myGoogleMapV3.style.width=mapProps.curStageWidth+"px";
 	myGoogleMapV3.style.height=mapProps.curStageHeight+"px";
 	var myLatlng = new google.maps.LatLng(mapProps.avgLat,mapProps.avgLong);
 	var myOptions = {
@@ -10724,7 +12502,7 @@ function onGMAPLoadV3(){
 		pm.point=new google.maps.LatLng(zAjaxNearAddressMarker[0], zAjaxNearAddressMarker[1]);
 		pm.title="zNearAddressMarker";
 		pm.htmlText='<table width="150"><tr><td>Location:<br>'+ad1+'</td></tr></table>';
-		var marker=zAddPermanentMarker(pm);
+		var marker=zAddPermanentMarkerV3(pm);
 		google.maps.event.trigger(marker,'click');
 		zMapOverlaysV3.push(marker);
 	}
@@ -11183,9 +12961,18 @@ function zAjaxMapRadiusChange(){
 		zAjaxSetNearAddress();
 	}
 }
+	function zAjaxMapCoordinatesRadiusChange(){
+		var d3=document.getElementById("search_near_radius");
+		if(d3.value !== ""){
+			zAjaxSetNearCoordinates();
+		}
+	}
 function zAjaxFailNearAddress(){
 	alert('There was a problem setting the address. Try again');
 }
+	function zAjaxFailNearCoordinates(){
+		alert('There was a problem setting the coordinates. Try again');
+	}
 function zAjaxSetNearAddress(){
 	var d1=document.getElementById("searchNearAddress");
 	var d2=document.getElementById("search_near_radius");
@@ -11200,6 +12987,20 @@ function zAjaxSetNearAddress(){
 	tempObj.ignoreOldRequests=true;
 	zAjax(tempObj);
 }
+	function zAjaxSetNearCoordinates(){
+		var d1=document.getElementById("search_near_coordinates");
+		var d2=document.getElementById("search_near_radius");
+		var d3="/z/listing/search-form/nearCoordinates?search_near_coordinates="+escape(d1.value)+"&search_near_radius="+escape(d2.value);
+		
+		var tempObj={};
+		tempObj.id="zMapNearCoordinates";
+		tempObj.url=d3;
+		tempObj.callback=zAjaxReturnNearCoordinates;
+		tempObj.errorCallback=zAjaxFailNearCoordinates;
+		tempObj.cache=false;
+		tempObj.ignoreOldRequests=true;
+		zAjax(tempObj);
+	}
 function zAjaxCancelNearAddress(){
 	var d1=document.getElementById("searchNearAddress");
 	var d2=document.getElementById("search_near_radius");
@@ -11208,6 +13009,14 @@ function zAjaxCancelNearAddress(){
 	d1.value='';
 	d2.value='0.1';
 }
+	function zAjaxCancelNearCoordinates(){
+		var d1=document.getElementById("search_near_coordinates");
+		var d2=document.getElementById("search_near_radius");
+		var d3=document.getElementById("zNearCoordinatesDiv");
+		d3.style.display="none";
+		d1.value='';
+		d2.value='0.1';
+	}
 function zNearAddressChange(o){
 	var d1=document.getElementById("zNearAddressDiv");
 	var d3=document.getElementById("search_near_address");
@@ -11218,6 +13027,16 @@ function zNearAddressChange(o){
 		d1.style.display="block";
 	}
 }
+	function zNearCoordinatesChange(o){
+		var d1=document.getElementById("zNearCoordinatesDiv");
+		var d3=document.getElementById("search_near_coordinates");
+		if(o.value === ""){
+			d1.style.display="none";
+			d3.value="";
+		}else{
+			d1.style.display="block";
+		}
+	}
 
 var zArrPermanentMarker=new Array();
 function zAjaxReturnNearAddress(r,skipParse){
@@ -11277,7 +13096,7 @@ function zAjaxReturnNearAddress(r,skipParse){
 	if(typeof mapObj === "undefined"){
 		return;
 	}
-	mapObjV3.closeInfoWindow();
+	// mapObjV3.closeInfoWindow();
 	mapObjV3.setCenter(new google.maps.LatLng(mapProps.avgLat, mapProps.avgLong), mapProps.zoom);
 	
 	zSetNearAddress(1);
@@ -11287,9 +13106,80 @@ function zAjaxReturnNearAddress(r,skipParse){
 	arrAd=d2.value.split(",");
 	var ad1=arrAd.shift()+"<br>"+arrAd.join(",");
 	pm.htmlText='<table width="150"><tr><td>Location:<br>'+ad1+'</td></tr></table>';
-	var marker=zAddPermanentMarker(pm);
+	var marker=zAddPermanentMarkerV3(pm);
 	google.maps.event.trigger(marker,"click");
 }
+	function zAjaxReturnNearCoordinates(r,skipParse){
+		// throws an error when debugging is enabled.
+		//r='{"success":true,"errorMsg":"","search_map_coordinates_list":"-81.1391101437,-81.1376618563,29.2753658556,29.2768141444"}';
+		if(zDebugMLSAjax){
+			document.write(r);	
+			return;
+		}
+		var myObj=eval('('+r+')');
+		if(!myObj.success){
+			alert(myObj.errorMessage);
+			return;
+		}
+		//alert("set:"+myObj.success);
+		// set map coordinates
+		var arrLatLong=myObj.search_map_coordinates_list.split(",");
+		var minLat=parseFloat(arrLatLong[2]);
+		var maxLat=parseFloat(arrLatLong[3]);
+		var minLong=parseFloat(arrLatLong[0]);
+		var maxLong=parseFloat(arrLatLong[1]);
+		var avgLat=(minLat+maxLat)/2;
+		var avgLong=(minLong+maxLong)/2;
+		var zoom=0;
+		var propHeight=Math.max(heightPerPixel*50,Math.abs(maxLat-minLat));
+		var propWidth=Math.max(widthPerPixel*50,Math.abs(maxLong-minLong));
+		var twp=widthPerPixel;
+		var thp=heightPerPixel;
+		margin=50;
+		for(zoom=1;zoom<=20;zoom++){
+			if(zoom !== 1){
+				twp*=2;
+				thp*=2;
+			}
+			maxWidth=mapProps.curStageWidth*twp;
+			maxHeight=mapProps.curStageHeight*thp;
+			// all properties must fit within zoom level
+			if(maxWidth>propWidth+(twp*margin) && maxHeight>propHeight+(thp*margin)){
+				break;
+			}
+		}
+		// set zoom and center
+		mapProps.avgLong=avgLong;
+		mapProps.avgLat=avgLat;
+		if(Math.abs(maxLat-minLat)===0){
+			mapProps.zoom=20-zoom;
+		}else{
+			mapProps.zoom=18-zoom;
+		}
+		streetView=false;
+		var d1=document.getElementById("searchNearLocation");
+		var d2=document.getElementById("search_near_coordinates");
+		// d2.value=d1.value;
+		var d3=document.getElementById("zNearCoordinatesDiv");
+		d3.style.display="none";
+
+		if(typeof mapObj === "undefined"){
+			return;
+		}
+		// mapObjV3.closeInfoWindow();
+		mapObjV3.setCenter(new google.maps.LatLng(mapProps.avgLat, mapProps.avgLong), mapProps.zoom);
+		
+		zSetNearAddress(1);
+		var pm=new Object();
+		pm.point=new google.maps.LatLng(mapProps.avgLat, mapProps.avgLong);
+		pm.title="zNearCoordinatesMarker";
+		arrAd=d1.value.split(",");
+		var ad1=arrAd.shift()+"<br>"+arrAd.join(",");
+		pm.htmlText='<table width="150"><tr><td>Location:<br>'+ad1+'</td></tr></table>';
+		var marker=zAddPermanentMarkerV3(pm);
+		google.maps.event.trigger(marker,"click");
+	}
+
 
 /* /var/jetendo-server/jetendo/public/javascript/jetendo-listing/listing-search-functions.js */
 var zlsSearchCriteriaMap={
@@ -11325,6 +13215,7 @@ search_mls_number_list:"cc",
 search_sort:"dd",
 search_listdate:"ee",
 search_near_address:"ff",
+search_near_coordinates:"ff1",
 search_near_radius:"gg",
 //search_sortppsqft:"",
 //search_new_first:"",
@@ -11400,7 +13291,7 @@ function zInputLinkBuildBox(obj, obj2,arrResults){
 	v=v+'<div class="top">Click a city below or use the keyboard up and down arrow keys and press enter to select the city.</div>';
 	for (j=0; j < arrResults.length; j++){
 		var arrJ=arrResults[j].split("\t");
-	v=v+'<a id="lid'+j+'" '+class1+' href="javascript:void(0);" onclick="zInputPutIntoForm(\''+arrJ[0]+'\',\''+arrJ[1]+'\',\''+obj.id+'\', \''+formName+'\',true); zInputHideDiv(\''+formName+'\');" >'+arrJ[0]+'</a>';
+	v=v+'<a id="lid'+j+'" '+class1+' href="##" onclick="zInputPutIntoForm(\''+arrJ[0]+'\',\''+arrJ[1]+'\',\''+obj.id+'\', \''+formName+'\',true); zInputHideDiv(\''+formName+'\'); return false;" >'+arrJ[0]+'</a>';
 		class1='class="zTOB-link" ';	
 		arrNewLink.push(j);
 	}

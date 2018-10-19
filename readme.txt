@@ -280,6 +280,23 @@ Padding & Margins
 	margin-top and margin-bottom set to 10 with left/right set to auto     z-mv-10-auto     
 	margin-left and margin-right set to 10 with top/bottom set to auto     z-mh-10-auto    
 	
+	
+	We also have prefixes for each breakpoint for text (z-t), heading (z-h), padding (z-p), margin (z-m) and the column grid classes (z-xofy).
+	zs- = 479 (small)
+	zm- = 767 (medium)
+	zb- = 992 (big)
+	zh- = 1362 (huge)
+
+	On this framework, it is mandatory for you to type the larger breakpoint on the left, and the smaller breakpoint on the right in a list of these classes.    The adjustment also applies to all sizes that are smaller automatically unless you override it again.
+
+	Example:
+	<div class="z-t-60 zm-t-30 zs-t-21">correct</div>
+
+	<div class="  zs-t-21 zm-t-30 z-t-60">not correct</div>
+
+	You can also force columns to work on mobile now:
+	<div class="z-1of3  zs-1of2">I'm 1/3 on desktop and 1/2 below 479</div>
+	
 Table
 	It's harder to deal with vertical alignments unless you use display:table-cell and height in CSS.  We've included a set of classes to let you align the children text/images in all 10 positions.
 	

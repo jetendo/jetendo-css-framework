@@ -59,7 +59,7 @@
 .z-uppercase { text-transform: uppercase; }
 .z-no-bullets { list-style: none; }
 
-.z-button, .z-button:link, .z-button:visited, .z-container input[type="submit"], .z-container input[type="button"], .z-container button {
+body .z-button, body .z-button:link, body .z-button:visited, .z-container input[type="submit"], .z-container input[type="button"], .z-container button {
 	display: inline-block;
 	padding:7px 25px;
 	color: #FFFFFF;
@@ -71,7 +71,7 @@
 	transition:background 0.5s;
 	text-decoration: none;
 }
-.z-button:hover, .z-container input[type="submit"]:hover, .z-container input[type="button"]:hover, .z-container button:hover {
+body .z-button:hover, .z-container input[type="submit"]:hover, .z-container input[type="button"]:hover, .z-container button:hover {
 	background: rgba(60,60,60, 1.0);
 	color:#FFF;
 }
@@ -289,8 +289,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', e
 	border-left-color: #999;
 }
 
-
-
 .zAnimateOnVisible{ }
 .zOnVisibleSlide {
 	-webkit-animation: zOnVisibleSlide 0.8s ease forwards;
@@ -315,13 +313,21 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', e
   animation: none;
 }
 
-.z-show-at-1362{display:none;}
-.z-show-at-992{display:none;}
-.z-show-at-767{display:none;}
-.z-show-at-479{display:none;}
+
+.z-show-at-1362{display:none !important;}
+.z-show-at-992{display:none !important;}
+.z-show-at-767{display:none !important;}
+.z-show-at-479{display:none !important;}
 
 .z-mobileMenuButton {display:none;}
 .z-mobileMenuDiv {display:none;}
+
+.z-mobileMenuDiv a, .z-mobileMenuDiv a:hover {
+    -webkit-transition:none !important;
+    -moz-transition:none !important;
+    -o-transition:none !important;
+    transition:none !important; 
+}
 
 .z-transition-all{-webkit-transition: all ease 0.3s; transition: all ease 0.3s;}
 

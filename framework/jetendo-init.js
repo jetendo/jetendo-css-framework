@@ -3,9 +3,7 @@ if(typeof Jetendo == "undefined"){
 	var Jetendo={
 		loadedFiles:{}
 	}
-} 
-
-
+}  
 var zArrMapFunctions=new Array();
 var zArrScrollFunctions=new Array();
 var zImageOnError=function(){};
@@ -18,7 +16,7 @@ var zMSIEVersion=-1;
 var zMSIEBrowser=window.navigator.userAgent.indexOf("MSIE"); 
 if(zMSIEBrowser != -1){	
 	zMSIEVersion= (window.navigator.userAgent.substring (zMSIEBrowser+5, window.navigator.userAgent.indexOf (".", zMSIEBrowser ))); 
-} 
+}  
 
 var forcedUpgradeMessage=false; 
 if(!forcedUpgradeMessage){
@@ -173,9 +171,9 @@ function zGlobalErrorHandler(message, url, lineNumber, columnOffset, errorObj) {
 	}catch(e){
 		// ignore errors.
 		//throw(e);
+		console.log(e);
 	}
-}
-
+} 
 if(!forcedUpgradeMessage){
 	window.onerror=zGlobalErrorHandler;
 }
